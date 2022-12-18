@@ -1,0 +1,8 @@
+﻿namespace AdventOfCode;
+
+public class _<YEAR>_<DAY> : Problem
+{
+    public override void Solve()
+    {
+    }
+}
