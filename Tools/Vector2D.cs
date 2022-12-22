@@ -16,6 +16,7 @@ public struct IPoint2D
     public static IPoint2D operator +(IPoint2D a, IVector2D b) => new(a.X + b.X, a.Y + b.Y);
     public static IPoint2D operator -(IPoint2D a, IVector2D b) => new(a.X - b.X, a.Y - b.Y);
     public static IVector2D operator -(IPoint2D a, IPoint2D b) => new(a.X - b.X, a.Y - b.Y);
+    public static IPoint2D operator /(IPoint2D a, int b) => new(a.X / b, a.Y / b);
     public static bool operator ==(IPoint2D a, IPoint2D b) => a.X == b.X && a.Y == b.Y;
     public static bool operator !=(IPoint2D a, IPoint2D b) => a.X != b.X || a.Y != b.Y;
     public override string ToString() => $"{X}, {Y}";
