@@ -4,7 +4,7 @@
     {
         static void Main(string[] args)
         {
-            Solve(2022, 22);
+            Solve(2022, 23);
         }
 
         private static void Solve(int year, int day, bool showData = true)
