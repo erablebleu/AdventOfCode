@@ -75,11 +75,13 @@ namespace AdventOfCode
 
         public static Problem Get(int year, int day)
         {
-            if (GenerateClass(year, day)) // class Generated
-                return null;
+            bool generated = GenerateClass(year, day);
 
             DownloadInputs(year, day);
             DownloadStatement(year, day);
+
+            if (generated)
+                return null;
 
             return (Problem)Activator.CreateInstance(Assembly.GetExecutingAssembly().GetTypes().First(t => t.FullName == $"AdventOfCode._{year}_{day:D2}"));
         }
