@@ -48,7 +48,7 @@ namespace AdventOfCode
         {
             string filepath = GetFilePath(year, day, "txt");
 
-            if (File.Exists(filepath) && !force)
+            if (File.Exists(filepath) && File.ReadAllText(filepath).Contains("--- Part Two ---") && !force)
                 return;
 
             var doc = new HtmlDocument();
@@ -65,9 +65,6 @@ namespace AdventOfCode
             if (File.Exists(filePath))
                 return false;
 
-            DownloadInputs(year, day);
-            DownloadStatement(year, day);
-
             string data = File.ReadAllText(Path.Combine(ProjectDir, "Problem.template"));
 
             data = data.Replace("<YEAR>", year.ToString());
@@ -80,6 +77,9 @@ namespace AdventOfCode
         {
             if (GenerateClass(year, day)) // class Generated
                 return null;
+
+            DownloadInputs(year, day);
+            DownloadStatement(year, day);
 
             return (Problem)Activator.CreateInstance(Assembly.GetExecutingAssembly().GetTypes().First(t => t.FullName == $"AdventOfCode._{year}_{day:D2}"));
         }

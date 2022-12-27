@@ -1,5 +1,8 @@
 ﻿namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/<YEAR>/day/<DAY>
+/// </summary>
 public class _<YEAR>_<DAY> : Problem
 {
     public override void Parse()

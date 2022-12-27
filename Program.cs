@@ -8,17 +8,7 @@ namespace AdventOfCode
         private static void Main(string[] args)
         {
             //Solve(2015, 3, false);
-            SolveBatch(2015, 5, 1, 6);
-        }
-
-        private static void AskDownloadPartTwo(Problem pb)
-        {
-            Console.WriteLine("Download Part 2 ? (Y/N)");
-
-            if (Console.ReadKey().Key != ConsoleKey.Y)
-                return;
-
-            Problem.DownloadStatement(pb.Year, pb.Day, true);
+            SolveBatch(2015, 11, 1, 1);
         }
 
         private static void Solve(int year, int day, bool showData = false)
@@ -47,16 +37,14 @@ namespace AdventOfCode
             sol = pb.PartTwo();
             sw.Stop();
             if (sol != null)
-                Console.WriteLine($"│ Part One     │{sw.Elapsed.TotalMilliseconds,22:F2} ms│{sol,25}│");
+                Console.WriteLine($"│ Part Two     │{sw.Elapsed.TotalMilliseconds,22:F2} ms│{sol,25}│");
             Console.WriteLine($"└──────────────┴─────────────────────────┴─────────────────────────┘");
-            if (sol is null)
-                AskDownloadPartTwo(pb);
         }
 
         private static void SolveBatch(int year, int day, int yearCount = 1, int dayCount = 1)
         {
             Console.WriteLine($"                          ┌───────────────────────────────────┬───────────────────────────────────┐");
-            Console.WriteLine($"                          │ Part One                          │ Part Two                          │");
+            Console.WriteLine($"                          │             Part One              │             Part Two              │");
             Console.WriteLine($"┌─────────────────────────┼───────────────────────────────────┼───────────────────────────────────┤");
             Console.WriteLine($"│ Problem │ Parse         │ Result                       Time │ Result                       Time │");
             Console.WriteLine($"├─────────┼───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
@@ -89,16 +77,6 @@ namespace AdventOfCode
                     object sol2 = pb.PartTwo();
                     sw.Stop();
                     Console.WriteLine($" {sol2,-19} {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
-
-                    if (sol1 != null && sol2 != null)
-                        continue;
-
-                    Console.WriteLine($"└─────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
-                    if (sol1 is null)
-                        return;
-
-                    AskDownloadPartTwo(pb);
-                    return;
                 }
             }
             Console.WriteLine($"└─────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
