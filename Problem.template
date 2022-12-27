@@ -2,7 +2,17 @@
 
 public class _<YEAR>_<DAY> : Problem
 {
-    public override void Solve()
+    public override void Parse()
     {
+    }
+
+    public override object PartOne()
+    {
+        return null;
+    }
+
+    public override object PartTwo()
+    {
+        return null;
     }
 }
