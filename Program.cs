@@ -8,7 +8,7 @@ namespace AdventOfCode
         private static void Main(string[] args)
         {
             //Solve(2015, 3, false);
-            SolveBatch(2015, 5, 1, 4);
+            SolveBatch(2015, 5, 1, 5);
         }
 
         private static void AskDownloadPartTwo(Problem pb)
