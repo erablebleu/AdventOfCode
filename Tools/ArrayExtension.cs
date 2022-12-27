@@ -27,4 +27,30 @@ public static class ArrayExtension
                 result[i, j] = data[i, j];
         return result;
     }
+    public static int Count<T>(this T[,] src, Func<T, bool> predicate)
+    {
+        int result = 0;
+        for (int i = 0; i < src.GetLength(0); i++)
+            for (int j = 0; j < src.GetLength(1); j++)
+                if (predicate.Invoke(src[i, j]))
+                    result++;
+        return result;
+    }
+    public static int Count<T>(this T[,] src, T value)
+    {
+        int result = 0;
+        for (int i = 0; i < src.GetLength(0); i++)
+            for (int j = 0; j < src.GetLength(1); j++)
+                if (src[i, j].Equals(value))
+                    result++;
+        return result;
+    }
+    public static int Sum(this int[,] src)
+    {
+        int result = 0;
+        for (int i = 0; i < src.GetLength(0); i++)
+            for (int j = 0; j < src.GetLength(1); j++)
+                result += src[i, j];
+        return result;
+    }
 }

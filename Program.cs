@@ -8,7 +8,7 @@ namespace AdventOfCode
         private static void Main(string[] args)
         {
             //Solve(2015, 3, false);
-            SolveBatch(2015, 5, 1, 1);
+            SolveBatch(2015, 5, 1, 2);
         }
 
         private static void AskDownloadPartTwo(Problem pb)
@@ -55,16 +55,16 @@ namespace AdventOfCode
 
         private static void SolveBatch(int year, int day, int yearCount = 1, int dayCount = 1)
         {
-            Console.WriteLine($"                               ┌───────────────────────────────────┬───────────────────────────────────┐");
-            Console.WriteLine($"                               │ Part One                          │ Part Two                          │");
-            Console.WriteLine($"┌──────────────────────────────┼───────────────────────────────────┼───────────────────────────────────┤");
-            Console.WriteLine($"│ Problem      │ Parse         │ Result                       Time │ Result                       Time │");
-            Console.WriteLine($"├──────────────┼───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
+            Console.WriteLine($"                          ┌───────────────────────────────────┬───────────────────────────────────┐");
+            Console.WriteLine($"                          │ Part One                          │ Part Two                          │");
+            Console.WriteLine($"┌─────────────────────────┼───────────────────────────────────┼───────────────────────────────────┤");
+            Console.WriteLine($"│ Problem │ Parse         │ Result                       Time │ Result                       Time │");
+            Console.WriteLine($"├─────────┼───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
             for (int y = year; y < year + yearCount; y++)
             {
                 for (int d = day; d < day + dayCount; d++)
                 {
-                    Console.Write($"│ {y} {d:D2}      │");
+                    Console.Write($"│ {y} {d:D2} │");
                     (int l, int r) = Console.GetCursorPosition();
                     Console.Write($"    generating class and downloading data");
                     Problem pb = Problem.Get(y, d);
@@ -74,7 +74,7 @@ namespace AdventOfCode
                     Stopwatch sw = new();
                     if (pb is null)
                     {
-                        Console.WriteLine($"               │                                   │                                   │");
+                        Console.WriteLine($"          │                                   │                                   │");
                         continue;
                     }
                     sw.Restart();
@@ -93,7 +93,7 @@ namespace AdventOfCode
                     if (sol1 != null && sol2 != null)
                         continue;
 
-                    Console.WriteLine($"└──────────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
+                    Console.WriteLine($"└─────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
                     if (sol1 is null)
                         return;
 
@@ -101,7 +101,7 @@ namespace AdventOfCode
                     return;
                 }
             }
-            Console.WriteLine($"└──────────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
+            Console.WriteLine($"└─────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
         }
     }
 }
