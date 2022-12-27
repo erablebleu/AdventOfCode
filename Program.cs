@@ -8,7 +8,7 @@ namespace AdventOfCode
         private static void Main(string[] args)
         {
             //Solve(2015, 3, false);
-            SolveBatch(2015, 01, 1, 3);
+            SolveBatch(2015, 01, 1, 4);
         }
 
         private static void AskDownloadPartTwo(Problem pb)
@@ -68,6 +68,8 @@ namespace AdventOfCode
                     (int l, int r) = Console.GetCursorPosition();
                     Console.Write($"    generating class and downloading data");
                     Problem pb = Problem.Get(y, d);
+                    Console.SetCursorPosition(l, r);
+                    Console.Write($"                                         ");
                     Console.SetCursorPosition(l, r);
                     Stopwatch sw = new();
                     if (pb is null)
