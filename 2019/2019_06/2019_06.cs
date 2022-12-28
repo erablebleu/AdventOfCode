@@ -96,16 +96,4 @@ namespace AdventOfCode
          return Name;
       }
    }
-
-   public static class DicExtension
-   {
-      public static T2 GetOrAdd<T1, T2>(this Dictionary<T1, T2> dic, T1 key, Func<T2> create)
-      {
-         if (dic.ContainsKey(key))
-            return dic[key];
-         var obj = create();
-         dic.Add(key, obj);
-         return obj;
-      }
-   }
 }

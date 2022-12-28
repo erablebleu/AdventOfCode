@@ -22,4 +22,13 @@ public static class DictionaryExtension
 
     public static int CountRecursive<T>(this Dictionary<int, Dictionary<int, Dictionary<int, T>>> dic) where T : new()
         => dic.Values.Sum(d2 => d2.Values.Sum(d3 => d3.Count));
+
+    public static T2 GetOrAdd<T1, T2>(this Dictionary<T1, T2> dic, T1 key, Func<T2> create)
+    {
+        if (dic.ContainsKey(key))
+            return dic[key];
+        var obj = create();
+        dic.Add(key, obj);
+        return obj;
+    }
 }
