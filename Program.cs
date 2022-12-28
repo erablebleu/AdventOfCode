@@ -8,7 +8,7 @@ namespace AdventOfCode
         private static void Main(string[] args)
         {
             //Solve(2015, 3, false);
-            SolveBatch(2015, 11, 1, 7);
+            SolveBatch(2015, 11, 1, 8);
         }
 
         private static void Solve(int year, int day, bool showData = false)
