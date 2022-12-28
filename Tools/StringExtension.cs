@@ -4,6 +4,20 @@ namespace AdventOfCode.Tools;
 
 public static class StringExtensions
 {
+    public static IEnumerable<int> AllIndexesOf(this string str, string value)
+    {
+        for (int i = 0; ; i += value.Length)
+        {
+            i = str.IndexOf(value, i);
+            if (i == -1)
+                break;
+
+            yield return i;
+        }
+
+        yield break;
+    }
+
     public static string[] ParseExact(this string data, string format) => ParseExact(data, format, false);
 
     public static string[] ParseExact(this string data, string format, bool ignoreCase)
