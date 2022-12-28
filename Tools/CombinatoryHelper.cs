@@ -14,6 +14,28 @@ public static class CombinatoryHelper
         return result;
     }
 
+    public static IEnumerable<T[]> GetCombination<T, T2>(T[] data, Func<IEnumerable<T>, T2> targetFunc, T2 targetSum)
+    {
+        // Use int to find combinations :
+        // bit index = index of integer in _data
+        // bit value : 1 if data used, otherwise 0
+        int combCnt = (int)Math.Pow(2, data.Length) - 1;
+
+        for (int i = 0; i < combCnt; i++)
+        {
+            List<T> subset = new();
+
+            for (int j = 0; j < data.Length; j++)
+                if ((i & (1 << j)) != 0)
+                    subset.Add(data[j]);
+
+            if (targetFunc.Invoke(subset).Equals(targetSum))
+                yield return subset.ToArray();
+        }
+
+        yield break;
+    }
+
     public static T[] GetKthPermutation<T>(long k, T[] objs)
     {
         T[] permutedObjs = new T[objs.Length];
