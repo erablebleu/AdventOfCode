@@ -14,7 +14,7 @@ public static class CombinatoryHelper
         return result;
     }
 
-    public static IEnumerable<T[]> GetCombination<T, T2>(T[] data, Func<IEnumerable<T>, T2> targetFunc, T2 targetSum)
+    public static IEnumerable<T[]> GetCombination<T, T2>(T[] data, Func<IEnumerable<T>, T2> targetFunc, T2 targetResult)
     {
         // Use int to find combinations :
         // bit index = index of integer in _data
@@ -29,7 +29,7 @@ public static class CombinatoryHelper
                 if ((i & (1 << j)) != 0)
                     subset.Add(data[j]);
 
-            if (targetFunc.Invoke(subset).Equals(targetSum))
+            if (targetFunc.Invoke(subset).Equals(targetResult))
                 yield return subset.ToArray();
         }
 

@@ -53,4 +53,11 @@ public static class ArrayExtension
                 result += src[i, j];
         return result;
     }
+    public static T[] RemoveRange<T>(this T[] src, IEnumerable<T> toRemove)
+    {
+        List<T> result = src.ToList();
+        foreach(T item in toRemove)
+            result.Remove(item);
+        return result.ToArray();
+    }
 }

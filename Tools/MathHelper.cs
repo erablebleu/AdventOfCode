@@ -13,6 +13,15 @@ public static class MathHelper
         return result;
     }
 
+    public static BigInteger Factorial(int n)
+    {
+        if (n == 0) return 1;
+        BigInteger result = 1;
+        for (int i = 1; i < n; i++)
+            result *= i;
+        return result;
+    }
+
     public static long GetHeptagonalNumber(long n) => n * (5 * n - 3) / 2;
 
     public static long GetHexagonalNumber(long n) => n * (2 * n - 1);
