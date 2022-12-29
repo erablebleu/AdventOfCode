@@ -31,4 +31,12 @@ public static class DictionaryExtension
         dic.Add(key, obj);
         return obj;
     }
+    public static T2 AddOrUpdate<T1, T2>(this Dictionary<T1, T2> dic, T1 key, T2 value, Func<T2, T2> update)
+    {
+        if (dic.ContainsKey(key))
+            dic[key] = update(dic[key]);
+        else
+            dic[key] = value;
+        return dic[key];
+    }
 }

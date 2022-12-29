@@ -7,7 +7,7 @@ namespace AdventOfCode
 
         private static void Main(string[] args)
         {
-            SolveBatch(2015, 1, 1, 25);
+            SolveBatch(2016, 1, 1, 1);
         }
 
         private static void Solve(int year, int day, bool showData = false)
@@ -44,8 +44,8 @@ namespace AdventOfCode
         {
             Console.WriteLine($"                          ┌───────────────────────────────────┬───────────────────────────────────┐");
             Console.WriteLine($"                          │             Part One              │             Part Two              │");
-            Console.WriteLine($"┌─────────────────────────┼───────────────────────────────────┼───────────────────────────────────┤");
-            Console.WriteLine($"│ Problem │ Parse         │ Result                       Time │ Result                       Time │");
+            Console.WriteLine($"┌─────────┬───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
+            Console.WriteLine($"│ Problem │ Parse    Time │ Result                       Time │ Result                       Time │");
             Console.WriteLine($"├─────────┼───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
             for (int y = year; y < year + yearCount; y++)
             {
