@@ -2,17 +2,17 @@
 
 public static class IntExtension
 {
-    public static int Loop(this int value, int min, int max)
+    public static int Loop(this int value, int min, int size)
     {
-        if (value < min) return max + (value - min + 1) % (max - min + 1);
-        if (value > max) return min + (value - max - 1) % (max - min + 1);
+        if (value < min) return min + size - 1 + (value - min + 1) % size;
+        if (value >= min + size) return min + (value - min - size) % size;
         return value;
     }
 
-    public static int Normalize(this int value, int min, int max)
+    public static int Normalize(this int value, int min, int size)
     {
         if (value < min) return min;
-        if (value > max) return max;
+        if (value >= min + size) return min + size - 1;
         return value;
     }
 }

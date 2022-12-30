@@ -21,7 +21,7 @@ public class _2016_04 : Problem
     private static string Decrypt(string input, int value)
     {
         value %= 26;
-        return new string(input.Select(c => c == '-' ? ' ' : (char)(c + value).Loop(97, 122)).ToArray());
+        return new string(input.Select(c => c == '-' ? ' ' : (char)(c + value).Loop(97, 26)).ToArray());
     }
 
     private static string GetChecksum(string data)
