@@ -4,6 +4,8 @@ namespace AdventOfCode.Tools;
 
 public static class StringExtensions
 {
+    public static Regex RegexInt = new Regex("[0-9]+");
+
     public static IEnumerable<int> AllIndexesOf(this string str, string value)
     {
         for (int i = 0; ; i += value.Length)
@@ -17,6 +19,8 @@ public static class StringExtensions
 
         yield break;
     }
+
+    public static IEnumerable<int> ExtractIntegers(this string data) => RegexInt.Matches(data).Select(m => int.Parse(m.Value));
 
     public static string[] ParseExact(this string data, string format) => ParseExact(data, format, false);
 
