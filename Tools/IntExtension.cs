@@ -28,4 +28,5 @@ public static class IntExtension
         return value;
     }
     public static int ResetBit(this int value, int bitIdx) => value & ~(1 << bitIdx);
+    public static bool IsInRange(this int value, int min, int size) => value >= min && value < min + size;
 }
