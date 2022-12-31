@@ -64,4 +64,11 @@ public static class StringExtensions
             return true;
         }
     }
+
+    public static string Remove(this string data, params string[] args)
+    {
+        foreach (string arg in args)
+            data = data.Replace(arg, string.Empty);
+        return data;
+    }
 }
