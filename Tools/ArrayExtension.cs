@@ -60,4 +60,12 @@ public static class ArrayExtension
             result.Remove(item);
         return result.ToArray();
     }
+
+    public static T[] Concat<T>(this T[] arrA, T[] arrB)
+    {
+        T[] result = new T[arrA.Length + arrB.Length];
+        Array.Copy(arrA, result, arrA.Length);
+        Array.Copy(arrB, 0, result, arrA.Length, arrB.Length);
+        return result;
+    }
 }
