@@ -28,38 +28,13 @@ public class _2022_15 : Problem
             return Math.Abs(Position.Y - y) <= Distance;
         }
     }
-    public class MultiRange
-    {
-        public List<_2022_04.Range> Ranges { get; set; } = new();
-        public void Add(int start, int end)
-        {
-            _2022_04.Range range = new(start, end);
-            _2022_04.Range rc = Ranges.FirstOrDefault(r => r.Cross(range));
-            while(rc != null)
-            {
-                Ranges.Remove(rc);
-                range = new _2022_04.Range(Math.Min(rc.Start, range.Start), Math.Max(rc.End, range.End));
-                rc = Ranges.FirstOrDefault(r => r.Cross(range));
-            }
-            Ranges.Add(range);
-        }
-        public int? GetOutRange(int max)
-        {
-            foreach(_2022_04.Range r in Ranges)
-            {
-                if (r.Start - 1 > 0) return r.Start - 1;
-                if(r.End + 1 < max) return r.End + 1;
-            }
-            return null;
-        }
-    }
     public override void Solve()
     {
         List<Sensor> sensors = Inputs.Select(l => new Sensor(l)).ToList();
         List<IPoint2D> beacons = sensors.Select(s => s.Beacon).ToList();
 
         int yTarget = 2000000;
-        MultiRange mr = GetMr(sensors, yTarget);
+        IMultiRange mr = GetMr(sensors, yTarget);
         int bc = beacons.Where(b => b.Y == yTarget).Select(b => b.X).Distinct().Where(x => mr.Ranges.Any(r => r.Contain(x))).Count();
         Solutions.Add($"{mr.Ranges.Sum(r => r.End - r.Start + 1) - bc}");
 
@@ -75,9 +50,9 @@ public class _2022_15 : Problem
             }
         }
     }
-    private static MultiRange GetMr(List<Sensor> sensors, int y)
+    private static IMultiRange GetMr(List<Sensor> sensors, int y)
     {
-        MultiRange mr = new();
+        IMultiRange mr = new();
 
         foreach (Sensor sensor in sensors)
         {
