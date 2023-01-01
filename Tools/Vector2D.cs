@@ -53,6 +53,13 @@ public struct IVector2D
         new IVector2D(0, 1),
         new IVector2D(-1, 0),
     };
+    public static IVector2D[] DirectionNSEW = new IVector2D[]
+    {
+        new IVector2D(0, -1),
+        new IVector2D(0, 1),
+        new IVector2D(-1, 0),
+        new IVector2D(1, 0),
+    };
 
     public IVector2D(int x, int y)
     {
