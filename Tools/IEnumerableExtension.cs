@@ -28,5 +28,13 @@ namespace AdventOfCode.Tools
 
             return res;
         }
+        public static T[,] Transpose<T>(this T[,] src)
+        {
+            T[,] result = new T[src.GetLength(1), src.GetLength(0)];
+            for(int x = 0; x < src.GetLength(0); x++)
+                for (int y = 0; y < src.GetLength(1); y++)
+                    result[y, x] = src[x, y];
+            return result;
+        }
     }
 }
