@@ -10,8 +10,8 @@ public struct IPoint2D
         Y = y;
     }
 
-    public int X { get; set; }
-    public int Y { get; set; }
+    public int X;
+    public int Y;
 
     public static IPoint2D operator -(IPoint2D a, IVector2D b) => new(a.X - b.X, a.Y - b.Y);
 
@@ -67,8 +67,8 @@ public struct IVector2D
         Y = y;
     }
 
-    public int X { get; set; }
-    public int Y { get; set; }
+    public int X;
+    public int Y;
 
     public static IVector2D operator -(IVector2D a, IVector2D b) => new(a.X - b.X, a.Y - b.Y);
 
