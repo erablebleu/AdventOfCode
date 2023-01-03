@@ -16,27 +16,29 @@ public class _2016_24 : Problem
                 if (Inputs[y][x] >= '0' && Inputs[y][x] <= '9')
                     _points.Add(Inputs[y][x] - '0', new Node { Number = Inputs[y][x] - '0', Position = new IPoint2D(x, y) });
 
-        for (int i = 0; i < _points.Count; i++)
+        foreach(Node node0 in _points.Values)
         {
-            for (int j = i + 1; j < _points.Count; j++)
-            {
-                int dist = FindShortestPath(_walls, _points[i].Position, _points[j].Position);
-                _points[i].Distances[_points[j].Number] = dist;
-                _points[j].Distances[_points[i].Number] = dist;
-            }
+            int[,] heatmap = GetHeatMap(_walls, node0.Position);
+            foreach (Node node1 in _points.Values)
+                node0.Distances[node1.Number] = heatmap[node1.Position.X, node1.Position.Y];
         }
     }
 
-    public override object PartOne() => GetPath();
+    public override object PartOne() => FindShortestPath();
 
-    public override object PartTwo() => GetPath(true);
+    public override object PartTwo() => FindShortestPath(true);
 
-    private static int FindShortestPath(bool[,] walls, IPoint2D src, IPoint2D dst)
+    private static int[,] GetHeatMap(bool[,] walls, IPoint2D src)
     {
         int width = walls.GetLength(0);
         int height = walls.GetLength(1);
-        int[,] heatmap = new int[width, height];
-        heatmap[src.X, src.Y] = 1;
+        int[,] result = new int[width, height];
+
+        for (int x = 0; x < width; x++)
+            for (int y = 0; y < height; y++)
+                result[x, y] = int.MinValue;
+
+        result[src.X, src.Y] = 0;
         int count;
 
         do
@@ -46,8 +48,7 @@ public class _2016_24 : Problem
             {
                 for (int y = 0; y < height; y++)
                 {
-                    if (heatmap[x, y] == 0
-                        || walls[x, y])
+                    if (result[x, y] < 0 || walls[x, y])
                         continue;
 
                     foreach (IVector2D dir in IVector2D.DirectionNESW)
@@ -58,24 +59,21 @@ public class _2016_24 : Problem
                         if (!x2.IsInRange(0, width)
                             || !y2.IsInRange(0, height)
                             || walls[x2, y2]
-                            || heatmap[x2, y2] > 0)
+                            || result[x2, y2] >= 0)
                             continue;
 
-                        if (x2 == dst.X && y2 == dst.Y)
-                            return heatmap[x, y];
-
                         count++;
-                        heatmap[x2, y2] = heatmap[x, y] + 1;
+                        result[x2, y2] = result[x, y] + 1;
                     }
                 }
             }
         }
         while (count > 0);
 
-        return int.MaxValue;
+        return result;
     }
 
-    private int GetPath(bool withReturn = false)
+    private int FindShortestPath(bool withReturn = false)
     {
         // Look for permutation;
         int result = int.MaxValue;
