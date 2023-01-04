@@ -7,7 +7,7 @@ namespace AdventOfCode
 
         private static void Main(string[] args)
         {
-            SolveBatch(2016, 22, 1, 4);
+            SolveBatch(2020, 20, 1);
         }
 
         private static void Solve(int year, int day, bool showData = false)
@@ -40,45 +40,69 @@ namespace AdventOfCode
             Console.WriteLine($"└──────────────┴─────────────────────────┴─────────────────────────┘");
         }
 
-        private static void SolveBatch(int year, int day, int yearCount = 1, int dayCount = 1)
+        private static void SolveBatch(int year, int day, int dayCount = 1)
         {
-            Console.WriteLine($"                          ┌───────────────────────────────────┬───────────────────────────────────┐");
-            Console.WriteLine($"                          │             Part One              │             Part Two              │");
-            Console.WriteLine($"┌─────────┬───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
-            Console.WriteLine($"│ Problem │ Parse    Time │ Result                       Time │ Result                       Time │");
-            Console.WriteLine($"├─────────┼───────────────┼───────────────────────────────────┼───────────────────────────────────┤");
-            for (int y = year; y < year + yearCount; y++)
+            int annotCount = 0;
+            Dictionary<int, string> annotations = new();
+
+            string ValidateSolution(object solution)
             {
-                for (int d = day; d < day + dayCount; d++)
-                {
-                    Console.Write($"│ {y} {d:D2} │");
-                    (int l, int r) = Console.GetCursorPosition();
-                    Console.Write($"    generating class and downloading data");
-                    Problem pb = Problem.Get(y, d);
-                    Console.SetCursorPosition(l, r);
-                    Console.Write($"                                         ");
-                    Console.SetCursorPosition(l, r);
-                    Stopwatch sw = new();
-                    if (pb is null)
-                    {
-                        Console.WriteLine($"               │                                   │                                   │*");
-                        continue;
-                    }
-                    sw.Restart();
-                    pb.Parse();
-                    sw.Stop();
-                    Console.Write($" {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
-                    sw.Restart();
-                    object sol1 = pb.PartOne();
-                    sw.Stop();
-                    Console.Write($" {sol1,-19} {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
-                    sw.Restart();
-                    object sol2 = pb.PartTwo();
-                    sw.Stop();
-                    Console.WriteLine($" {sol2,-19} {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
-                }
+                if (solution is null) return null;
+                string solText = solution.ToString();
+                if (solText.Length <= 25)
+                    return solText;
+                annotations.Add(++annotCount, solText);
+                return $"{solText[..(25 - 6 - annotCount.ToString().Length)]}... ({annotCount})";
             }
-            Console.WriteLine($"└─────────┴───────────────┴───────────────────────────────────┴───────────────────────────────────┘");
+
+            Console.WriteLine($"                          ┌─────────────────────────────────────────┬─────────────────────────────────────────┐");
+            Console.WriteLine($"                          │                Part One                 │                Part Two                 │");
+            Console.WriteLine($"┌─────────┬───────────────┼─────────────────────────────────────────┼─────────────────────────────────────────┤");
+            Console.WriteLine($"│ Problem │ Parse    Time │ Result                             Time │ Result                             Time │");
+            Console.WriteLine($"├─────────┼───────────────┼─────────────────────────────────────────┼─────────────────────────────────────────┤");
+
+            int d = day-1;
+            int y = year;
+            for(int i = 0; i < dayCount; i++)
+            {
+                d++;
+                if(d > 25)
+                {
+                    d = 1;
+                    y++;
+                }
+                if(i > 0 && d == 1)
+                    Console.WriteLine($"├─────────┼───────────────┼─────────────────────────────────────────┼─────────────────────────────────────────┤");
+
+                Console.Write($"│ {y} {d:D2} │");
+                (int l, int r) = Console.GetCursorPosition();
+                Console.Write($"    generating class and downloading data");
+                Problem pb = Problem.Get(y, d);
+                Console.SetCursorPosition(l, r);
+                Console.Write($"                                         ");
+                Console.SetCursorPosition(l, r);
+                Stopwatch sw = new();
+                if (pb is null)
+                {
+                    Console.WriteLine($"               │                                   │                                   │*");
+                    continue;
+                }
+                sw.Restart();
+                pb.Parse();
+                sw.Stop();
+                Console.Write($" {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
+                sw.Restart();
+                object sol1 = pb.PartOne();
+                sw.Stop();
+                Console.Write($" {ValidateSolution(sol1),-25} {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
+                sw.Restart();
+                object sol2 = pb.PartTwo();
+                sw.Stop();
+                Console.WriteLine($" {ValidateSolution(sol2),-25} {sw.Elapsed.TotalMilliseconds,10:F2} ms │");
+            }
+            Console.WriteLine($"└─────────┴───────────────┴─────────────────────────────────────────┴─────────────────────────────────────────┘");
+            foreach (KeyValuePair<int, string> kv in annotations)
+                Console.WriteLine((kv.Value.Contains(Environment.NewLine) ? Environment.NewLine : string.Empty) + $"({kv.Key}) {kv.Value}");
         }
     }
 }

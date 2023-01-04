@@ -1,8 +1,15 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/02
+/// </summary>
 public class _2022_02 : Problem
 {
-    public override void Solve()
+    public override void Parse()
+    {
+    }
+
+    public override object PartOne()
     {
         // Opponent
         // A: Rock
@@ -18,7 +25,7 @@ public class _2022_02 : Problem
 
         int score = 0;
 
-        foreach(string line in Inputs)
+        foreach (string line in Inputs)
         {
             int o = GetPlay(line[0]);
             int m = GetPlay(line[2]);
@@ -29,15 +36,17 @@ public class _2022_02 : Problem
                 score += 6;
         }
 
-        Solutions.Add($"{score}");
+        return score;
+    }
 
-
+    public override object PartTwo()
+    {
         // Response
         // X: lose
         // Y: draw
         // Z: win
 
-        score = 0;
+        int score = 0;
 
         foreach (string line in Inputs)
         {
@@ -50,10 +59,12 @@ public class _2022_02 : Problem
                     m = o - 1;
                     if (m <= 0) m = 3;
                     break;
+
                 case 'Y':// Draw
                     m = o;
                     score += 3;
                     break;
+
                 case 'Z':// Win
                     m = o + 1;
                     if (m > 3) m = 1;
@@ -63,10 +74,10 @@ public class _2022_02 : Problem
             score += m;
         }
 
-        Solutions.Add($"{score}");
-
+        return score;
     }
-    public static int GetPlay(char input) => input switch
+
+    private static int GetPlay(char input) => input switch
     {
         'A' => 1,
         'B' => 2,

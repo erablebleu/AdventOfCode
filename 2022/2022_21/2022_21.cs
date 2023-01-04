@@ -1,18 +1,24 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/21
+/// </summary>
 public class _2022_21 : Problem
 {
-    public override void Solve()
-    {
-        Dictionary<string, MonkeyNumber> data = Inputs.Select(l => new MonkeyNumber(l)).ToDictionary(m => m.Name, m => m);
-        foreach (MonkeyNumber m in data.Values)
-            m.SetDependencies(data);
+    private Dictionary<string, MonkeyNumber> _data;
 
-        AddSolution(data["root"].GetValue());
-        AddSolution(data["root"].ReverseValue("humn"));
+    public override void Parse()
+    {
+        _data = Inputs.Select(l => new MonkeyNumber(l)).ToDictionary(m => m.Name, m => m);
+        foreach (MonkeyNumber m in _data.Values)
+            m.SetDependencies(_data);
     }
 
-    public class MonkeyNumber
+    public override object PartOne() => _data["root"].GetValue();
+
+    public override object PartTwo() => _data["root"].ReverseValue("humn");
+
+    private class MonkeyNumber
     {
         private readonly bool _isOperation;
         private readonly string _m0;
@@ -42,17 +48,6 @@ public class _2022_21 : Problem
         public MonkeyNumber M0 { get; set; }
         public MonkeyNumber M1 { get; set; }
         public string Name { get; set; }
-
-        public bool SearchDependency(string key)
-        {
-            if (Name == key)
-                KeyDependent = true;
-            else if (!_isOperation)
-                KeyDependent = false;
-            else
-                KeyDependent = M0.SearchDependency(key) || M1.SearchDependency(key);
-            return KeyDependent;
-        }
 
         public long GetValue()
         {
@@ -99,12 +94,23 @@ public class _2022_21 : Problem
             return 0;
         }
 
-        public void SetDependencies(Dictionary<string, MonkeyNumber> data)
+        public bool SearchDependency(string key)
+        {
+            if (Name == key)
+                KeyDependent = true;
+            else if (!_isOperation)
+                KeyDependent = false;
+            else
+                KeyDependent = M0.SearchDependency(key) || M1.SearchDependency(key);
+            return KeyDependent;
+        }
+
+        public void SetDependencies(Dictionary<string, MonkeyNumber> _data)
         {
             if (!_isOperation)
                 return;
-            M0 = data[_m0];
-            M1 = data[_m1];
+            M0 = _data[_m0];
+            M1 = _data[_m1];
         }
     }
 }

@@ -1,30 +1,38 @@
-using System;
-using AdventOfCode.Tools;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/14
+/// </summary>
 public class _2021_14 : Problem
 {
-    internal record PairInsertionRule(string Pair, string Inserted);
     private PairInsertionRule[] _pairInsertionRules;
+    private Dictionary<string, long> _template;
 
-    public override void Solve()
+    public override void Parse()
     {
         _pairInsertionRules = Inputs.Skip(2).Select(l => new PairInsertionRule(l[..2], l.Substring(6, 1))).ToArray();
-        Dictionary<string, long> template = GetTemplate(Inputs.First());
-
-        for (int i = 0; i < 10; i++)
-            template = NextStep(template);
-
-        Solutions.Add($"{MostMinusLeast(template)}");
-
-        for (int i = 0; i < 30; i++)
-            template = NextStep(template);
-
-        Solutions.Add($"{MostMinusLeast(template)}");
+        _template = GetTemplate(Inputs.First());
     }
 
-    private Dictionary<string, long> GetTemplate(string template)
+    public override object PartOne()
+    {
+        for (int i = 0; i < 10; i++)
+            _template = NextStep(_template);
+
+        return MostMinusLeast(_template);
+    }
+
+    public override object PartTwo()
+    {
+        for (int i = 0; i < 30; i++)
+            _template = NextStep(_template);
+
+        return MostMinusLeast(_template);
+    }
+
+    private record PairInsertionRule(string Pair, string Inserted);
+
+    private static Dictionary<string, long> GetTemplate(string template)
     {
         Dictionary<string, long> result = new();
         for (int i = 0; i < template.Length - 1; i++)
@@ -35,13 +43,13 @@ public class _2021_14 : Problem
     private static long MostMinusLeast(Dictionary<string, long> template)
     {
         Dictionary<char, long> result = new();
-        foreach(KeyValuePair<string, long> pair in template)
+        foreach (KeyValuePair<string, long> pair in template)
         {
             result.AddOrInc(pair.Key[0], pair.Value);
             result.AddOrInc(pair.Key[1], pair.Value);
         }
         IOrderedEnumerable<long> ordered = result.Values.OrderBy(v => v);
-        return (ordered.Last() - ordered.First())/2;
+        return (ordered.Last() - ordered.First()) / 2;
     }
 
     private Dictionary<string, long> NextStep(Dictionary<string, long> template)

@@ -1,29 +1,43 @@
 using AdventOfCode.Tools;
 
 namespace AdventOfCode;
+/// <summary>
+/// https://adventofcode.com/2021/day/20
+/// </summary>
 public class _2021_20 : Problem
 {
-    public override void Solve()
+    private Dictionary<System.Drawing.Point, bool> _data;
+
+    public override void Parse()
     {
-        string key = Inputs[0];
         char[,] img = Inputs.Skip(2).To2DArray();
-        Dictionary<System.Drawing.Point, bool> data = new ();
+        _data = new Dictionary<System.Drawing.Point, bool>();
 
         for (int i = 0; i < img.GetLength(0); i++)
             for (int j = 0; j < img.GetLength(1); j++)
-                data.Add(new System.Drawing.Point(i, j), img[i, j] == '#');
+                _data.Add(new System.Drawing.Point(i, j), img[i, j] == '#');
+    }
 
+    public override object PartOne()
+    {
+        string key = Inputs[0];
         for (int i = 0; i < 2; i++)
-            data = EnhanceImage(data, key, i);
+            _data = EnhanceImage(_data, key, i);
 
-        Solutions.Add($"{data.Values.Count(v => v)}");
+        return _data.Values.Count(v => v);
+    }
+
+    public override object PartTwo()
+    {
+        string key = Inputs[0];
 
         for (int i = 0; i < 48; i++)
-            data = EnhanceImage(data, key, i);
+            _data = EnhanceImage(_data, key, i);
 
-        Solutions.Add($"{data.Values.Count(v => v)}");
+        return _data.Values.Count(v => v);
     }
-    private static int GetVal(Dictionary<System.Drawing.Point, bool> data, System.Drawing.Point p, int defValue)
+
+    private static int GetVal(Dictionary<System.Drawing.Point, bool> _data, System.Drawing.Point p, int defValue)
     {
         int value = 0;
         for (int dx = -1; dx < 2; dx++)
@@ -31,8 +45,8 @@ public class _2021_20 : Problem
             for (int dy = -1; dy < 2; dy++)
             {
                 System.Drawing.Point np = new System.Drawing.Point(p.X + dx, p.Y + dy);
-                if (data.ContainsKey(np))
-                    value += data[np] ? 1 : 0;
+                if (_data.ContainsKey(np))
+                    value += _data[np] ? 1 : 0;
                 else
                     value += defValue;
                 value *= 2;
@@ -40,11 +54,11 @@ public class _2021_20 : Problem
         }
         return value / 2;
     }
-    private Dictionary<System.Drawing.Point, bool> EnhanceImage(Dictionary<System.Drawing.Point, bool> data, string key, int count)
+    private Dictionary<System.Drawing.Point, bool> EnhanceImage(Dictionary<System.Drawing.Point, bool> _data, string key, int count)
     {
         Dictionary<System.Drawing.Point, bool> result = new ();
 
-        foreach (KeyValuePair<System.Drawing.Point, bool> kv in data)
+        foreach (KeyValuePair<System.Drawing.Point, bool> kv in _data)
         {
             for (int dx = -1; dx < 2; dx++)
             {
@@ -54,7 +68,7 @@ public class _2021_20 : Problem
                     if (result.ContainsKey(p))
                         continue;
 
-                    int val = GetVal(data, p, count % 2);
+                    int val = GetVal(_data, p, count % 2);
                     result.Add(p, key[val] == '#');
                 }
             }
@@ -100,3 +114,4 @@ public class _2021_20 : Problem
         return result;
     }
 }
+

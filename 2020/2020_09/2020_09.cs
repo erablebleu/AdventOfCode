@@ -1,50 +1,58 @@
-using System.Linq;
+namespace AdventOfCode;
 
-namespace AdventOfCode
+/// <summary>
+/// https://adventofcode.com/2020/day/09
+/// </summary>
+public class _2020_09 : Problem
 {
-    public class _2020_09 : Problem
+    private long[] _data;
+    private long _invalidNumber;
+
+    public override void Parse()
     {
-        #region Methods
+        _data = Inputs.Select(v => long.Parse(v)).ToArray();
+    }
 
-        public override void Solve()
-        {
-            long[] array = Inputs.Select(v => long.Parse(v)).ToArray();
-            long invalidNumber = 0;
+    public override object PartOne()
+    {
+        _invalidNumber = 0;
 
-            for(int i = 25; i < array.Length; i++)
-                if(!IsSumOfTwo(array.Skip(i - 25).Take(25).ToArray(), array[i]))
-                {
-                    invalidNumber = array[i];
-                    Solutions.Add($"{invalidNumber}");
-                    break;
-                }
-
-            for(int i = 0; i <array.Length; i++)
+        for (int i = 25; i < _data.Length; i++)
+            if (!IsSumOfTwo(_data.Skip(i - 25).Take(25).ToArray(), _data[i]))
             {
-                int j = 0;
-                long sum = array[i];
-                for (j = i + 1; j < array.Length && sum < invalidNumber; j++)
-                    sum += array[j];
-
-                if (sum != invalidNumber)
-                    continue;
-
-                var arr = array.Skip(i).Take(j - i).ToArray();
-
-                Solutions.Add($"{(arr.Min() + arr.Max())}");
-                break;
+                _invalidNumber = _data[i];
+                return _invalidNumber;
             }
-        }
 
-        private bool IsSumOfTwo(long[] array, long value)
+        return null;
+    }
+
+    public override object PartTwo()
+    {
+        for (int i = 0; i < _data.Length; i++)
         {
-            for (int i = 0; i < array.Length; i++)
-                for (int j = i + 1; j < array.Length; j++)
-                    if (array[i] + array[j] == value)
-                        return true;
-            return false;
+            int j = 0;
+            long sum = _data[i];
+            for (j = i + 1; j < _data.Length && sum < _invalidNumber; j++)
+                sum += _data[j];
+
+            if (sum != _invalidNumber)
+                continue;
+
+            var arr = _data.Skip(i).Take(j - i).ToArray();
+
+            return arr.Min() + arr.Max();
         }
 
-        #endregion
+        return null;
+    }
+
+    private static bool IsSumOfTwo(long[] _data, long value)
+    {
+        for (int i = 0; i < _data.Length; i++)
+            for (int j = i + 1; j < _data.Length; j++)
+                if (_data[i] + _data[j] == value)
+                    return true;
+        return false;
     }
 }

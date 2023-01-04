@@ -1,55 +1,44 @@
-using System.Security;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/07
+/// </summary>
 public class _2022_07 : Problem
 {
-    public class FileInfo
-    {
-        private int _size;
-        public string Name { get; set; }
-        public int Size { get => IsDirectory ? Content.Sum(f => f.Size) : _size; set => _size = value; }
-        public bool IsDirectory { get; set; }
-        public List<FileInfo> Content { get; set; } = new();
-        public FileInfo(string name) { 
-            Name = name;
-            IsDirectory = true;
-        }
-        public FileInfo(string name, int size) : this(name)
-        {
-            Size = size;
-            IsDirectory = false;
-        }
+    private List<FileInfo> _directories;
+    private FileInfo _root;
 
-    }
-    public override void Solve()
+    public override void Parse()
     {
-        FileInfo root = new("/");
-        FileInfo currentDir = root;
-        List<FileInfo> directories = new() { root };
+        _root = new FileInfo("/");
+        FileInfo currentDir = _root;
+        _directories = new List<FileInfo>() { _root };
 
         for (int i = 0; i < Inputs.Length; i++)
         {
             string line = Inputs[i];
             string cmd = line.Substring(2, 2);
-            switch(cmd)
+            switch (cmd)
             {
                 case "cd":
                     string target = line.Substring(5);
-                    switch(target)
+                    switch (target)
                     {
                         case "..":
-                            currentDir = directories.First(d => d.Content.Contains(currentDir));
+                            currentDir = _directories.First(d => d.Content.Contains(currentDir));
                             break;
+
                         case "/":
-                            currentDir = root;
+                            currentDir = _root;
                             break;
+
                         default:
                             currentDir = currentDir.Content.First(d => d.Name == target);
                             break;
                     }
 
                     break;
+
                 case "ls":
                     while (i + 1 < Inputs.Length && !Inputs[i + 1].StartsWith("$"))
                     {
@@ -58,7 +47,7 @@ public class _2022_07 : Problem
                         if (el[0] == "dir")
                         {
                             FileInfo dir = new(el[1]);
-                            directories.Add(dir);
+                            _directories.Add(dir);
                             currentDir.Content.Add(dir);
                         }
                         else
@@ -70,12 +59,37 @@ public class _2022_07 : Problem
                     break;
             }
         }
+    }
 
-        Solutions.Add($"{directories.Where(d => d.Size <= 100000).Sum(d => d.Size)}");
+    public override object PartOne() => _directories.Where(d => d.Size <= 100000).Sum(d => d.Size);
 
-        int totalSize = root.Size;
+    public override object PartTwo()
+    {
+        int totalSize = _root.Size;
         int unusedSize = 70000000 - totalSize;
 
-        Solutions.Add($"{directories.Where(d => d.Size + unusedSize >= 30000000).OrderBy(d => d.Size).First().Size}");
+        return _directories.Where(d => d.Size + unusedSize >= 30000000).OrderBy(d => d.Size).First().Size;
+    }
+
+    private class FileInfo
+    {
+        private int _size;
+
+        public FileInfo(string name)
+        {
+            Name = name;
+            IsDirectory = true;
+        }
+
+        public FileInfo(string name, int size) : this(name)
+        {
+            Size = size;
+            IsDirectory = false;
+        }
+
+        public List<FileInfo> Content { get; set; } = new();
+        public bool IsDirectory { get; set; }
+        public string Name { get; set; }
+        public int Size { get => IsDirectory ? Content.Sum(f => f.Size) : _size; set => _size = value; }
     }
 }

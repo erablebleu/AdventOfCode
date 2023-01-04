@@ -1,36 +1,35 @@
-using System.Linq;
+namespace AdventOfCode;
 
-namespace AdventOfCode
+/// <summary>
+/// https://adventofcode.com/2020/day/01
+/// </summary>
+public class _2020_01 : Problem
 {
-    public class _2020_01 : Problem
+    private int[] _data;
+
+    public override void Parse()
     {
-        #region Methods
+        _data = Inputs.Select(i => int.Parse(i)).ToArray();
+    }
 
-        public override void Solve()
-        {
-            int[] data = Inputs.Select(i => int.Parse(i)).ToArray();
+    public override object PartOne()
+    {
+        for (int i = 0; i < _data.Length; i++)
+            for (int j = i + 1; j < _data.Length; j++)
+                if (_data[i] + _data[j] == 2020)
+                    return _data[i] * _data[j];
 
-            for (int i = 0; i < data.Length; i++)
-                for (int j = i + 1; j < data.Length; j++)
-                    if (data[i] + data[j] == 2020)
-                    {
-                        Solutions.Add((data[i] * data[j]).ToString());
-                        i = data.Length;
-                        j = data.Length;
-                    }
+        return null;
+    }
 
-            for (int i = 0; i < data.Length; i++)
-                for (int j = i + 1; j < data.Length; j++)
-                    for (int k = j + 1; k < data.Length; k++)
-                        if (data[i] + data[j] + data[k] == 2020)
-                        {
-                            Solutions.Add((data[i] * data[j] * data[k]).ToString());
-                            i = data.Length;
-                            j = data.Length;
-                            k = data.Length;
-                        }
-        }
+    public override object PartTwo()
+    {
+        for (int i = 0; i < _data.Length; i++)
+            for (int j = i + 1; j < _data.Length; j++)
+                for (int k = j + 1; k < _data.Length; k++)
+                    if (_data[i] + _data[j] + _data[k] == 2020)
+                        return _data[i] * _data[j] * _data[k];
 
-        #endregion
+        return null;
     }
 }

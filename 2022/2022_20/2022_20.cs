@@ -1,16 +1,19 @@
-using static AdventOfCode._2022_16;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/20
+/// </summary>
 public class _2022_20 : Problem
 {
-    // Use record to manage multiple identical input
-    record Item(int Idx, long Value);
-    public override void Solve()
+    public override void Parse()
     {
-        AddSolution(GetGroveCoordinates(Mix(1, Enumerable.Range(0, Inputs.Length).Select(i => new Item(i, int.Parse(Inputs[i]))).ToArray())));
-        AddSolution(GetGroveCoordinates(Mix(10, Enumerable.Range(0, Inputs.Length).Select(i => new Item(i, 811589153 * long.Parse(Inputs[i]))).ToArray())));
     }
+
+    public override object PartOne() => GetGroveCoordinates(Mix(1, Enumerable.Range(0, Inputs.Length).Select(i => new Item(i, int.Parse(Inputs[i]))).ToArray()));
+
+    public override object PartTwo() => GetGroveCoordinates(Mix(10, Enumerable.Range(0, Inputs.Length).Select(i => new Item(i, 811589153 * long.Parse(Inputs[i]))).ToArray()));
+
+    private record Item(int Idx, long Value);
 
     private static long GetGroveCoordinates(List<Item> data)
     {

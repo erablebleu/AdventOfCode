@@ -1,13 +1,15 @@
-using System.Runtime.CompilerServices;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/24
+/// </summary>
 public class _2021_24 : Problem
 {
-    public override void Solve()
+    private int[][] _data;
+
+    public override void Parse()
     {
-        long[] result = new long[2];
-        int[][] data = new int[7][];
+        _data = new int[7][];
         int[,] stack = new int[7, 2];
         int sIdx = 0;
         int dIdx = 0;
@@ -29,7 +31,7 @@ public class _2021_24 : Problem
             else
             {
                 sIdx--;
-                data[dIdx] = new int[]
+                _data[dIdx] = new int[]
                 {
                     stack[sIdx, 0],
                     i,
@@ -38,30 +40,44 @@ public class _2021_24 : Problem
                 dIdx++;
             }
         }
+    }
 
-        long AddValue(int w, int[] d) => w * (long)Math.Pow(10, 13 - d[0]) + (w + d[2]) * (long)Math.Pow(10, 13 - d[1]);
+    public override object PartOne()
+    {
+        long result = 0;
 
-        for (int i = 0; i < data.GetLength(0); i++)
+        for (int i = 0; i < _data.GetLength(0); i++)
         {
             for (int w = 9; w > 0; w--)
             {
-                if (w + data[i][2] >= 10)
+                if (w + _data[i][2] >= 10)
                     continue;
-                
-                result[0] += AddValue(w, data[i]);
-                break;                
-            }
-            for (int w = 1; w < 10; w++)
-            {
-                if (w + data[i][2] <= 0)
-                    continue;
-                
-                result[1] += AddValue(w, data[i]);
-                break;                
+
+                result += AddValue(w, _data[i]);
+                break;
             }
         }
 
-        AddSolution(result[0]);
-        AddSolution(result[1]);
+        return result;
     }
+
+    public override object PartTwo()
+    {
+        long result = 0;
+
+        for (int i = 0; i < _data.GetLength(0); i++)
+        {
+            for (int w = 1; w < 10; w++)
+            {
+                if (w + _data[i][2] <= 0)
+                    continue;
+
+                result += AddValue(w, _data[i]);
+                break;
+            }
+        }
+        return result;
+    }
+
+    private static long AddValue(int w, int[] d) => w * (long)Math.Pow(10, 13 - d[0]) + (w + d[2]) * (long)Math.Pow(10, 13 - d[1]);
 }

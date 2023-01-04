@@ -1,8 +1,10 @@
-using AdventOfCode.Tools;
 using IPoint = System.Drawing.Point;
 
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/08
+/// </summary>
 public class _2022_08 : Problem
 {
     private static readonly IPoint[] Directions = new IPoint[]
@@ -13,7 +15,18 @@ public class _2022_08 : Problem
             new IPoint(0, 1),
         };
 
-    public static bool IsVisible(int[,] data, int i, int j)
+    private int[,] _data;
+
+    public override void Parse()
+    {
+        _data = Inputs.Select(l => l.Select(c => int.Parse(c.ToString()))).To2DArray();
+    }
+
+    public override object PartOne() => _data.Count(IsVisible);
+
+    public override object PartTwo() => _data.Max(ScenicScore);
+
+    private static bool IsVisible(int[,] data, int i, int j)
     {
         int val = data[i, j];
 
@@ -40,7 +53,8 @@ public class _2022_08 : Problem
 
         return false;
     }
-    public static int ScenicScore(int[,] data, int i, int j)
+
+    private static int ScenicScore(int[,] data, int i, int j)
     {
         int val = data[i, j];
         int result = 1;
@@ -55,7 +69,7 @@ public class _2022_08 : Problem
                 && y >= 0 && y < data.GetLength(1))
             {
                 view++;
-                if (data[x, y] >= val) 
+                if (data[x, y] >= val)
                     break;
                 x += v.X;
                 y += v.Y;
@@ -65,14 +79,5 @@ public class _2022_08 : Problem
         }
 
         return result;
-    }
-
-    public override void Solve()
-    {
-        int[,] data = Inputs.Select(l => l.Select(c => int.Parse(c.ToString()))).To2DArray();
-
-        Solutions.Add($"{data.Count(IsVisible)}");
-
-        Solutions.Add($"{data.Max(ScenicScore)}");
     }
 }

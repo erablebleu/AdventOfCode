@@ -2,22 +2,37 @@ using System.Threading.Tasks;
 
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/19
+/// </summary>
 public class _2022_19 : Problem
 {
-    public override void Solve()
+    private List<BluePrint> _blueprints;
+
+    public override void Parse()
     {
-        List<BluePrint> blueprints = Inputs.Select(l => new BluePrint(l)).ToList();
-        int[] res = new int[blueprints.Count];
-
-        Parallel.ForEach(blueprints, b => { res[blueprints.IndexOf(b)] = b.Emulate(24); });
-        AddSolution(Enumerable.Range(0, blueprints.Count).Sum(i => blueprints[i].Number * res[i]));
-
-        res = new int[3];
-        Parallel.ForEach(blueprints.Take(3), b => { res[blueprints.IndexOf(b)] = b.Emulate(32); });
-        AddSolution(res.Product());
+        _blueprints = Inputs.Select(l => new BluePrint(l)).ToList();
     }
 
-    public class BluePrint
+    public override object PartOne()
+    {
+        int[] res = new int[_blueprints.Count];
+
+        Parallel.ForEach(_blueprints, b => { res[_blueprints.IndexOf(b)] = b.Emulate(24); });
+
+        return Enumerable.Range(0, _blueprints.Count).Sum(i => _blueprints[i].Number * res[i]);
+    }
+
+    public override object PartTwo()
+    {
+        int[] res = new int[3];
+
+        Parallel.ForEach(_blueprints.Take(3), b => { res[_blueprints.IndexOf(b)] = b.Emulate(32); });
+
+        return res.Product();
+    }
+
+    private class BluePrint
     {
         private int _emulationResult = 0;
 

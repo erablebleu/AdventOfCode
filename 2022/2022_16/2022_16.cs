@@ -1,102 +1,84 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/16
+/// </summary>
 public class _2022_16 : Problem
 {
-    public class Valve
+    private int _toOpen;
+    private Valve[] _valves;
+
+    public override void Parse()
     {
-        public string Name { get; set; }
-        public int FlowRate { get; set; }
-        public string[] Access { get; set; }
-        public Valve(string value)
+        Dictionary<string, Valve> valves = Inputs.Select(l => Parse(l)).ToDictionary(v => v.Name, v => v);
+        _valves = valves.Values.Where(v => v.FlowRate > 0).Append(valves["AA"]).ToArray();
+
+        foreach (Valve source in _valves)
         {
-            string[] el = value.Split(" ");
-            Name = el[1];
-            FlowRate = int.Parse(el[4].Replace("rate=", "").Replace(";", ""));
-            Access = el.Skip(9).Select(l => l.Replace(",", "")).ToArray();
-        }
-        public override string ToString() => $"{Name} - {FlowRate} - {string.Join(",", Access)}";
-    }
-    private Dictionary<string, Valve> _valves;
-    private Dictionary<string, Dictionary<string, int>> _distances;
-    public override void Solve()
-    {
-        _valves = Inputs.Select(l => new Valve(l)).ToDictionary(v => v.Name, valves => valves);
-        _distances = new Dictionary<string, Dictionary<string, int>>();
-        foreach(string source in _valves.Keys)
-        {
-            Dictionary<string, int> map = new();
-            foreach (string target in _valves.Keys)
+            foreach (Valve target in _valves)
             {
-                if(target == source)
-                {
-                    map[target] = 0;
+                if (target == source
+                    || source.Distances.ContainsKey(Array.IndexOf(_valves, target)))
                     continue;
-                }
-                List<string> dest = _valves[source].Access.ToList();
+
+                List<string> dest = source.Access.ToList();
                 int count = 1;
-                while (!dest.Contains(target))
+                while (!dest.Contains(target.Name))
                 {
-                    dest = dest.SelectMany(d => _valves[d].Access).Distinct().ToList();
+                    dest = dest.SelectMany(d => valves[d].Access).Distinct().ToList();
                     count++;
                 }
-                map[target] = count;
-            }
-            _distances.Add(source, map);
-        }
-
-        AddSolution($"{SearchPath(30, 0, _valves["AA"], new List<string>())}");
-        AddSolution($"{SearchDualPath(26, 0, _valves["AA"], _valves["AA"], 0, 0, new List<string>())}");
-
-        //Solutions.Add($"{combinations.Max(c => EmulateDual(c))}");
-    }
-
-    public int SearchPath(int time, int pressure, Valve valve, List<string> opened)
-    {
-        int res = pressure;
-        List<Valve> accessibleValves = _valves.Values.Where(v => !opened.Contains(v.Name) && v.FlowRate > 0 && _distances[valve.Name][v.Name] < time).ToList();
-
-        if (!accessibleValves.Any())
-        {
-            res += time * opened.Sum(v => _valves[v].FlowRate);
-        }
-        else
-        {
-            foreach (Valve v2 in accessibleValves)
-            {
-                int d = _distances[valve.Name][v2.Name];
-                List<string> o2 = opened.ToList();
-                o2.Add(v2.Name);
-                res = Math.Max(res, SearchPath(time - d - 1, pressure + (d + 1) * opened.Sum(v => _valves[v].FlowRate), v2, o2));
+                source.Distances[Array.IndexOf(_valves, target)] = count;
+                target.Distances[Array.IndexOf(_valves, source)] = count;
             }
         }
-        return res;
+
+        _toOpen = (int)Math.Pow(2, _valves.Length - 1) - 1;
     }
 
-    public int SearchDualPath(int time, int pressure, Valve v0, Valve v1, int d0, int d1, List<string> opened)
+    public override object PartOne() => SearchPath(30, 0, _valves.Length - 1, _toOpen);
+
+    public override object PartTwo() => SearchDualPath(26, 0, _valves.Length - 1, _valves.Length - 1, 0, 0, _toOpen);
+
+    private static Valve Parse(string line)
     {
+        string[] el = line.Replace(",", "").Split(' ');
+        return new Valve
+        {
+            Name = el[1],
+            FlowRate = int.Parse(el[4].Substring(5, el[4].Length - 6)),
+            Access = el.Skip(9).ToArray(),
+        };
+    }
+
+    private int SearchDualPath(int time, int pressure, int idx0, int idx1, int d0, int d1, int toOpen)
+    {
+        if (toOpen == 0 || time < 0) return pressure;
+
         int res = pressure;
 
-        if (time <= 0)
-        {
-            //Console.WriteLine($"{res} - {string.Join(", ", opened)}");
-            return pressure;
-        }
-
-        List<Valve> t0 = d0 > 0 ? new() : _valves.Values.Where(v => !opened.Contains(v.Name) && v.FlowRate > 0 && v != v1 && _distances[v0.Name][v.Name] < time - 1).ToList();
-        List<Valve> t1 = d1 > 0 ? new() : _valves.Values.Where(v => !opened.Contains(v.Name) && v.FlowRate > 0 && v != v0 && _distances[v1.Name][v.Name] < time - 1).ToList();
-
-        if(!t0.Any() && !t1.Any())
-            return pressure;
+        List<int> t0 = d0 != 0 ? new List<int>() : Enumerable.Range(0, _valves.Length - 1).Where(i => toOpen.GetBit(i) && i != idx1 && _valves[idx0].Distances[i] < time - 1).ToList();
+        List<int> t1 = d1 != 0 ? new List<int>() : Enumerable.Range(0, _valves.Length - 1).Where(i => toOpen.GetBit(i) && i != idx0 && _valves[idx1].Distances[i] < time - 1).ToList();
 
         if (!t0.Any())
-            t0.Add(v0);
+            t0.Add(idx0);
         if (!t1.Any())
-            t1.Add(v1);
+            t1.Add(idx1);
 
-        foreach (Valve target0 in t0)
+        HashSet<int> set = new();
+
+        foreach (int target0 in t0)
         {
-            foreach(Valve target1 in t1)
+            foreach (int target1 in t1)
             {
+                int hash = target0.SetBit(target1);
+                if (set.Contains(hash))
+                    continue;
+                set.Add(hash);
+
+                if (target0 == idx0 && target1 == idx1)
+                    return pressure;
+
                 if (target0 == target1)
                     continue;
 
@@ -105,26 +87,53 @@ public class _2022_16 : Problem
                 int dist0 = d0;
                 int dist1 = d1;
 
-                List<string> o2 = opened.ToList();
-                if (target0 != v0)
+                int nToOpen = toOpen;
+
+                if (target0 != idx0)
                 {
-                    dist0 = _distances[v0.Name][target0.Name] + 1;
-                    o2.Add(target0.Name);
-                    newP += (time - dist0) * target0.FlowRate;
+                    dist0 = _valves[idx0].Distances[target0] + 1;
+                    nToOpen = nToOpen.ResetBit(target0);
+                    newP += (time - dist0) * _valves[target0].FlowRate;
                 }
-                if (target1 != v1)
+                if (target1 != idx1)
                 {
-                    dist1 = _distances[v1.Name][target1.Name] + 1;
-                    o2.Add(target1.Name);
-                    newP += (time - dist1) * target1.FlowRate;
+                    dist1 = _valves[idx1].Distances[target1] + 1;
+                    nToOpen = nToOpen.ResetBit(target1);
+                    newP += (time - dist1) * _valves[target1].FlowRate;
                 }
 
                 int mind = Math.Min(dist0, dist1);
 
-                res = Math.Max(res, SearchDualPath(time - mind, newP, target0, target1, dist0 - mind, dist1 - mind, o2));
+                res = Math.Max(res, SearchDualPath(time - mind, newP, target0, target1, dist0 - mind, dist1 - mind, nToOpen));
             }
         }
 
         return res;
+    }
+
+    private int SearchPath(int time, int pressure, int idx, int toOpen)
+    {
+        if (toOpen == 0 || time < 0) return pressure;
+
+        int res = pressure;
+        List<int> accessibleValves = Enumerable.Range(0, _valves.Length - 1).Where(i => toOpen.GetBit(i)).ToList();
+
+        foreach (int idx1 in accessibleValves)
+        {
+            int d = _valves[idx].Distances[idx1];
+            int nToOpen = toOpen.ResetBit(idx1);
+            res = Math.Max(res, SearchPath(time - d - 1, pressure + (time - d - 1) * _valves[idx1].FlowRate, idx1, nToOpen));
+        }
+        return res;
+    }
+
+    private class Valve
+    {
+        public string[] Access = Array.Empty<string>();
+        public Dictionary<int, int> Distances = new();
+        public int FlowRate;
+        public string Name;
+
+        public override string ToString() => $"{Name} - {FlowRate} - {string.Join(",", Access)}";
     }
 }

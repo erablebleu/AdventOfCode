@@ -1,111 +1,90 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace AdventOfCode;
 
-namespace AdventOfCode
+/// <summary>
+/// https://adventofcode.com/2019/day/10
+/// </summary>
+public class _2019_10 : Problem
 {
-   public class _2019_10 : Problem
-   {
-      #region Fields
+    private List<Asteroid> _asts;
 
-      #endregion
+    public override void Parse()
+    {
+        int width = Inputs[0].Length;
+        int height = Inputs.Length;
+        bool[][] map = new bool[height][];
+        int[][] eye = new int[height][];
+        _asts = new List<Asteroid>();
 
-      #region Constructors
+        for (int i = 0; i < height; i++)
+            for (int j = 0; j < width; j++)
+                if (Inputs[i][j] == '#')
+                    _asts.Add(new Asteroid(j, i));
 
-      public _2019_10()
-      {
-
-      }
-
-      #endregion
-
-      #region Methods
-
-      public override void Solve()
-      {
-         int width = Inputs[0].Length;
-         int height = Inputs.Length;
-         bool[][] map = new bool[height][];
-         int[][] eye = new int[height][];
-         List<Asteroid> asts = new List<Asteroid>();
-
-         for (int i = 0; i < height; i++)
-            for(int j=0; j < width; j++)
-               if(Inputs[i][j] == '#')
-                  asts.Add(new Asteroid(j, i));
-
-         for (int i = 0; i < asts.Count; i++)
-         {
-            for (int j = 0; j < asts.Count; j++)
+        for (int i = 0; i < _asts.Count; i++)
+        {
+            for (int j = 0; j < _asts.Count; j++)
             {
-               asts[i].AddAst(asts[j]);
+                _asts[i].AddAst(_asts[j]);
             }
-         }
+        }
 
-         asts = asts.OrderByDescending(a => a.Angles.Count).ToList();
-         var ast = asts.First();
+        _asts = _asts.OrderByDescending(a => a.Angles.Count).ToList();
+    }
 
-         Console.WriteLine($"Max asts : {ast}");
+    public override object PartOne() => _asts.First().Angles.Count();
 
-         Solutions.Add(ast.Angles.Count().ToString());
+    public override object PartTwo()
+    {
+        Asteroid ast = _asts.First().GetNth(200);
+        return ast.X * 100 + ast.Y;
+    }
 
-         var ast2 = ast.GetNth(200);
+    private class Asteroid
+    {
+        public Asteroid(int x, int y)
+        {
+            X = x;
+            Y = y;
+            Angles = new SortedDictionary<double, List<Asteroid>>();
+        }
 
-         Solutions.Add((ast2.X * 100 + ast2.Y).ToString());
-      }
+        public SortedDictionary<double, List<Asteroid>> Angles { get; set; }
+        public int X { get; set; }
+        public int Y { get; set; }
 
-      #endregion
-   }
+        public void AddAst(Asteroid ast)
+        {
+            if (X == ast.X && Y == ast.Y)
+                return;
 
-}
-public class Asteroid
-{
-   public int X { get; set; }
-   public int Y { get; set; }
-   public SortedDictionary<double, List<Asteroid>> Angles { get; set; }
-   public Asteroid(int x, int y)
-   {
-      X = x;
-      Y = y;
-      Angles = new SortedDictionary<double, List<Asteroid>>();
-   }
-   public override string ToString()
-   {
-      return $"X:{X} Y:{Y} Cnt:{Angles.Count}";
-   }
-   public void AddAst(Asteroid ast)
-   {
-      if (X == ast.X && Y == ast.Y)
-         return;
+            double angle = Math.Atan2(ast.X - X, ast.Y - Y);
+            if (Angles.ContainsKey(angle))
+                Angles[angle].Add(ast);
+            else
+                Angles.Add(angle, new List<Asteroid>() { ast });
+        }
 
-      double angle = Math.Atan2(ast.X - X, ast.Y - Y);
-      if (Angles.ContainsKey(angle))
-         Angles[angle].Add(ast);
-      else
-         Angles.Add(angle, new List<Asteroid>() { ast });
-   }
+        public Asteroid GetNth(int n)
+        {
+            int cnt = 0;
+            Asteroid ast = null;
 
-   public Asteroid GetNth(int n)
-   {
-      int cnt = 0;
-      Asteroid ast = null;
+            while (cnt < n)
+            {
+                for (int i = Angles.Count - 1; i >= 0 && cnt < n; i--)
+                {
+                    cnt++;
+                    var kv = Angles.ElementAt(i);
+                    ast = kv.Value.First();
+                    kv.Value.Remove(ast);
+                    if (kv.Value.Count <= 0)
+                        Angles.Remove(kv.Key);
+                }
+            }
 
+            return ast;
+        }
 
-      while(cnt < n)
-      {
-         for(int i = Angles.Count - 1; i>= 0 && cnt < n; i--)
-         {
-            cnt++;
-            var kv = Angles.ElementAt(i);
-            ast = kv.Value.First();
-            kv.Value.Remove(ast);
-            if (kv.Value.Count <= 0)
-               Angles.Remove(kv.Key);
-         }
-      }
-
-      return ast;
-   }
+        public override string ToString() => $"X:{X} Y:{Y} Cnt:{Angles.Count}";
+    }
 }

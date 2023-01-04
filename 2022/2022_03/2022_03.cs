@@ -1,15 +1,28 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/03
+/// </summary>
 public class _2022_03 : Problem
 {
-    public override void Solve()
+    private int[][] _data;
+
+    public static int GetPriority(char c)
+    {
+        if (c >= 'a' && c <= 'z') return (int)c - 'a' + 1;
+        return c - 'A' + 27;
+    }
+
+    public override void Parse()
+    {
+        _data = Inputs.Select(l => l.Select(c => GetPriority(c)).ToArray()).ToArray();
+    }
+
+    public override object PartOne()
     {
         int prioritySum = 0;
 
-        int[][] data = Inputs.Select(l => l.Select(c => GetPriority(c)).ToArray()).ToArray();
-
-
-        foreach(int[] line in data)
+        foreach (int[] line in _data)
         {
             int[] c1 = line.Take(line.Length / 2).ToArray();
             int[] c2 = line.Skip(line.Length / 2).ToArray();
@@ -23,26 +36,25 @@ public class _2022_03 : Problem
             }
         }
 
-        Solutions.Add($"{prioritySum}");
+        return prioritySum;
+    }
 
-        prioritySum = 0;
-        for (int i = 0; i < data.Length; i+=3)
+    public override object PartTwo()
+    {
+        int prioritySum = 0;
+
+        for (int i = 0; i < _data.Length; i += 3)
         {
-            foreach (int c in data[i])
+            foreach (int c in _data[i])
             {
-                if (!data[i + 1].Contains(c)
-                    || !data[i + 2].Contains(c))
+                if (!_data[i + 1].Contains(c)
+                    || !_data[i + 2].Contains(c))
                     continue;
                 prioritySum += c;
                 break;
             }
         }
 
-        Solutions.Add($"{prioritySum}");
-    }
-    public static int GetPriority(char c)
-    {
-        if (c >= 'a' && c <= 'z') return (int)c - 'a' + 1;
-        return c - 'A' + 27;
+        return prioritySum;
     }
 }

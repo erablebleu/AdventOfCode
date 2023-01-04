@@ -1,11 +1,38 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace AdventOfCode
+namespace AdventOfCode;
+
+/// <summary>
+/// https://adventofcode.com/2020/day/04
+/// </summary>
+public class _2020_04 : Problem
 {
-    public record Passport
+    private List<Passport> _passports;
+
+    public override void Parse()
+    {
+        _passports = new List<Passport>
+            {
+                new Passport()
+            };
+
+        foreach (var line in Inputs.SelectMany(i => i.Split(" ")))
+        {
+            if (line == string.Empty)
+                _passports.Add(new Passport());
+            else
+            {
+                var el2 = line.Split(":");
+                _passports.Last().PopulatePassport(el2[0], el2[1]);
+            }
+        }
+    }
+
+    public override object PartOne() => _passports.Count(p => p.IsValid());
+
+    public override object PartTwo() => _passports.Count(p => p.IsValid2());
+
+    private record Passport
     {
         public Dictionary<string, string> Fields { get; set; } = new Dictionary<string, string> {
             { "byr", null },
@@ -23,7 +50,7 @@ namespace AdventOfCode
         public void PopulatePassport(string key, string value) => Fields[key] = value;
         public bool IsValid() => Fields.Where(kv => kv.Value == null).All(kv => kv.Key == "cid");
         public bool IsValid2() => IsValid() && Fields.All(kv => IsFieldValid(kv.Key, kv.Value));
-        private static bool ValidateIntField(string value, int min, int max) => int.TryParse(value, out var val) && val >= min && val <= max; 
+        private static bool ValidateIntField(string value, int min, int max) => int.TryParse(value, out var val) && val >= min && val <= max;
         private static bool IsFieldValid(KeyValuePair<string, string> kv) => IsFieldValid(kv.Key, kv.Value);
         private static bool IsFieldValid(string key, string value) => key switch
         {
@@ -48,34 +75,5 @@ namespace AdventOfCode
                 _ => false,
             };
         }
-    }
-
-    public class _2020_04 : Problem
-    {
-        #region Methods
-
-        public override void Solve()
-        {
-            List<Passport> passports = new List<Passport>
-            {
-                new Passport()
-            };
-
-            foreach (var line in Inputs.SelectMany(i => i.Split(" ")))
-            {
-                if (line == string.Empty)
-                    passports.Add(new Passport());
-                else
-                {
-                    var el2 = line.Split(":");
-                    passports.Last().PopulatePassport(el2[0], el2[1]);
-                }
-            }
-
-            Solutions.Add($"{passports.Count(p => p.IsValid())}");
-            Solutions.Add($"{passports.Count(p => p.IsValid2())}");
-        }
-
-        #endregion
     }
 }

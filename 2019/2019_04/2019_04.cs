@@ -1,49 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace AdventOfCode;
 
-namespace AdventOfCode
+/// <summary>
+/// https://adventofcode.com/2019/day/04
+/// </summary>
+public class _2019_04 : Problem
 {
-   public class _2019_04 : Problem
-   {
-      #region Constructors
+    private int[] _data;
 
-      public _2019_04()
-      {
-      }
+    public override void Parse()
+    {
+        _data = Inputs[0].Split('-').Select(e => int.Parse(e)).ToArray();
+    }
 
-      #endregion
+    public override object PartOne()
+    {
+        int cnt = 0;
 
-      #region Methods
-
-      public override void Solve()
-      {
-         string[] el = Inputs[0].Split('-');
-         int min = int.Parse(el[0]);
-         int max = int.Parse(el[1]);
-         int cnt = 0;
-
-         for (int i = min; i < max; i++)
-         {
+        for (int i = _data[0]; i < _data[1]; i++)
+        {
             bool adj = false;
             int j;
             for (j = 0; j < 6 - 1; j++)
             {
-               adj |= GetDigit(i, j) == GetDigit(i, j + 1);
-               if (GetDigit(i, j) < GetDigit(i, j + 1))
-                  break;
+                adj |= GetDigit(i, j) == GetDigit(i, j + 1);
+                if (GetDigit(i, j) < GetDigit(i, j + 1))
+                    break;
             }
             if (adj && j == 5)
-               cnt++;
-         }
+                cnt++;
+        }
 
-         Solutions.Add(cnt.ToString());
+        return cnt;
+    }
 
-         cnt = 0;
-         for (int i = min; i < max; i++)
-         {
+    public override object PartTwo()
+    {
+        int cnt = 0;
+
+        for (int i = _data[0]; i < _data[1]; i++)
+        {
             bool adj = false;
             bool inc = false;
             int j;
@@ -52,30 +47,24 @@ namespace AdventOfCode
 
             for (j = 0; j < 6; j++)
             {
-               int dig = GetDigit(i, j);
-               inc |= dig > lastDig;
-               if (lastDig == dig)
-                  digCnt++;
-               else
-               {
-                  lastDig = dig;
-                  adj |= digCnt == 2; 
-                  digCnt = 1;
-               }
+                int dig = GetDigit(i, j);
+                inc |= dig > lastDig;
+                if (lastDig == dig)
+                    digCnt++;
+                else
+                {
+                    lastDig = dig;
+                    adj |= digCnt == 2;
+                    digCnt = 1;
+                }
             }
             adj |= digCnt == 2;
             if (adj && !inc)
-               cnt++;
-         }
+                cnt++;
+        }
 
-         Solutions.Add(cnt.ToString());
-      }
+        return cnt;
+    }
 
-      public int GetDigit(int i, int digit)
-      {
-         return i / (int)Math.Pow(10, digit) % 10;
-      }
-
-      #endregion
-   }
+    private static int GetDigit(int i, int digit) => i / (int)Math.Pow(10, digit) % 10;
 }

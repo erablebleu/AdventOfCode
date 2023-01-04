@@ -1,57 +1,38 @@
-using System.Collections.Generic;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/21
+/// </summary>
 public class _2021_21 : Problem
 {
-    internal class Dice
+    public override void Parse()
     {
-        private int _value = 0;
-        public int RollCount { get; private set; }
-        public int Get()
-        {
-            _value = _value % 100 + 1;
-            RollCount++;
-            return _value;
-        }
     }
-    internal class Player
-    {
-        public int Score { get; set; }
-        public int Position { get; set; }
-        public Player(int pos)
-        {
-            Position = pos;
-        }
-        public bool Play(Dice dice)
-        {
-            Position = (Position + Enumerable.Range(0, 3).Sum(i => dice.Get()) - 1) % 10 + 1;
-            Score += Position;
-            return Score >= 1000;
-        }
-    }
-    public override void Solve()
+
+    public override object PartOne()
     {
         Dice dice = new();
         Player[] players = Inputs.Select(l => new Player(int.Parse(l[28..]))).ToArray();
 
-        while(!players.Any(p => p.Score >= 1000))
+        while (!players.Any(p => p.Score >= 1000))
         {
             foreach (Player player in players)
                 if (player.Play(dice))
                     break;
         }
 
-        Solutions.Add($"{dice.RollCount * players.First(p => p.Score < 1000).Score}");
+        return dice.RollCount * players.First(p => p.Score < 1000).Score;
+    }
 
-
+    public override object PartTwo()
+    {
         int[] p = Inputs.Select(l => int.Parse(l[28..])).ToArray();
         int[] s = new int[] { 0, 0 };
         long[] win = new long[] { 0, 0 };
 
-        Dictionary<(int p1, int p2, int s1, int s2, bool turn, int toss), (long, long) > cache = new();
+        Dictionary<(int p1, int p2, int s1, int s2, bool turn, int toss), (long, long)> cache = new();
 
-        for(int i =1; i <= 3; i++)
+        for (int i = 1; i <= 3; i++)
             for (int j = 1; j <= 3; j++)
                 for (int k = 1; k <= 3; k++)
                 {
@@ -71,7 +52,7 @@ public class _2021_21 : Problem
             pos += toss;
             pos = (pos - 1) % 10 + 1;
             score += pos;
-            if(score >= 21)
+            if (score >= 21)
             {
                 result = player ? (0, 1) : (1, 0);
                 cache[(p1, p2, s1, s2, player, toss)] = result;
@@ -79,7 +60,7 @@ public class _2021_21 : Problem
             }
 
             (int pr1, int pr2, int sc1, int sc2) = (p1, p2, s1, s2);
-            if(!player)
+            if (!player)
             {
                 p1 = pos;
                 s1 = score;
@@ -104,7 +85,37 @@ public class _2021_21 : Problem
             return (win1, win2);
         }
 
+        return win.Max();
+    }
 
-        Solutions.Add($"{win.Max()}");
+    private class Dice
+    {
+        private int _value = 0;
+        public int RollCount { get; private set; }
+
+        public int Get()
+        {
+            _value = _value % 100 + 1;
+            RollCount++;
+            return _value;
+        }
+    }
+
+    private class Player
+    {
+        public Player(int pos)
+        {
+            Position = pos;
+        }
+
+        public int Position { get; set; }
+        public int Score { get; set; }
+
+        public bool Play(Dice dice)
+        {
+            Position = (Position + Enumerable.Range(0, 3).Sum(i => dice.Get()) - 1) % 10 + 1;
+            Score += Position;
+            return Score >= 1000;
+        }
     }
 }

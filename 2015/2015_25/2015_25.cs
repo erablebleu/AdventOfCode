@@ -15,7 +15,7 @@ public class _2015_25 : Problem
 
     public override object PartOne() => GetCodeAt(_coord[1], _coord[0]);
 
-    public override object PartTwo() => "Happy Christmas !";
+    public override object PartTwo() => "Merry Christmas!";
 
     private long GetCodeAt(int x, int y)
     {

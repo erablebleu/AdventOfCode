@@ -2,9 +2,20 @@ using System.Runtime.CompilerServices;
 
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/23
+/// </summary>
 public class _2021_23 : Problem
 {
-    public class AmphipodDiagram
+    public override void Parse()
+    {
+    }
+
+    public override object PartOne() => new AmphipodDiagram(Inputs).Emulate();
+
+    public override object PartTwo() => new AmphipodDiagram(Inputs, "  #D#C#B#A#", "  #D#B#A#C#").Emulate();
+
+    private class AmphipodDiagram
     {
         private static readonly char[] AmphipodType = new char[] { 'A', 'B', 'C', 'D' };
         private static readonly int[] EnergyCost = new int[] { 1, 10, 100, 1000 };
@@ -186,10 +197,5 @@ public class _2021_23 : Problem
             Console.WriteLine();
         }
     }
-
-    public override void Solve()
-    {
-        AddSolution(new AmphipodDiagram(Inputs).Emulate());
-        AddSolution(new AmphipodDiagram(Inputs, "  #D#C#B#A#", "  #D#B#A#C#").Emulate());
-    }
 }
+

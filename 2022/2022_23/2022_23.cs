@@ -1,9 +1,8 @@
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Xml.Serialization;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/23
+/// </summary>
 public class _2022_23 : Problem
 {
     private static List<KeyValuePair<IVector2D, IVector2D[]>> Directions = new()
@@ -13,82 +12,56 @@ public class _2022_23 : Problem
             new KeyValuePair<IVector2D, IVector2D[]>(new IVector2D(-1, 0), new IVector2D[] { new IVector2D(-1, -1), new IVector2D(-1, 0), new IVector2D(-1, 1) }), // W
             new KeyValuePair<IVector2D, IVector2D[]>(new IVector2D(1, 0), new IVector2D[] { new IVector2D(1, -1), new IVector2D(1, 0), new IVector2D(1, 1) }), // E
         };
-    private class Map
+
+    private int[] _solutions = new int[2];
+
+    public override void Parse()
     {
-        private readonly int _xMin;
-        private readonly int _xMax;
-        private readonly int _yMin;
-        private readonly int _yMax;
+        List<Elf> elves = new();
 
-        private readonly bool[,] _map;
-        private readonly int[,] _targets;
+        for (int y = 0; y < Inputs.Length; y++)
+            for (int x = 0; x < Inputs[y].Length; x++)
+                if (Inputs[y][x] == '#')
+                    elves.Add(new Elf(x, y));
 
-        public bool this[int x, int y] => _map[x - _xMin, y - _yMin];
-        public bool this[IPoint2D p] => this[p.X, p.Y];
-
-        public void AddTarget(IPoint2D p)
+        int moveCount = 0;
+        int round = 0;
+        do
         {
-            _targets[p.X - _xMin, p.Y - _yMin]++;
-        }
-        public int GetTarget(IPoint2D p) => _targets[p.X - _xMin, p.Y - _yMin]++;
+            // Use a map to store all position
+            Map map = new(elves);
 
-        public Map(List<Elf> elves)
-        {
-            _xMin = int.MaxValue;
-            _yMin = int.MaxValue;
-            _xMax = int.MinValue;
-            _yMax = int.MinValue;
+            foreach (Elf elf in elves)
+                elf.SearchDirection(map);
 
-            foreach (Elf e in elves)
-            {
-                _xMin = Math.Min(_xMin, e.Position.X);
-                _xMax = Math.Max(_xMax, e.Position.X);
-                _yMin = Math.Min(_yMin, e.Position.Y);
-                _yMax = Math.Max(_yMax, e.Position.Y);
-            }
-            // Add 1 to all direction to allow elves moves
-            _xMin--;
-            _yMin--;
-            _xMax++;
-            _yMax++;
+            moveCount = elves.Count(e => e.TryMove(map));
 
-            _map = new bool[_xMax - _xMin + 1, _yMax - _yMin + 1];
-            _targets = new int[_xMax - _xMin + 1, _yMax - _yMin + 1];
+            KeyValuePair<IVector2D, IVector2D[]> kv = Directions.First();
+            Directions.Remove(kv);
+            Directions.Add(kv);
 
-            foreach (Elf e in elves)
-                _map[e.Position.X - _xMin, e.Position.Y - _yMin] = true;
-        }
+            if (round == 10)
+                _solutions[0] = map.CountEmptyTiles();
 
-        public void Log()
-        {
-            for (int y = _yMin; y < _yMax + 1; y++)
-            {
-                string line = string.Empty;
-                for (int x = _xMin; x < _xMax + 1; x++)
-                    line += this[x, y] ? "#" : ".";
+            round++;
+        } while (moveCount > 0);
 
-                Console.WriteLine(line);
-            }
-        }
-        public int CountEmptyTiles()
-        {
-            int count = 0;
-            for(int x = _xMin + 1; x < _xMax; x++)
-                for (int y = _yMin + 1; y < _yMax; y++)
-                    if (!this[x, y]) count++;
-            return count;
-        }
+        _solutions[1] = round;
     }
+
+    public override object PartOne() => _solutions[0];
+
+    public override object PartTwo() => _solutions[1];
 
     private class Elf
     {
-        public IPoint2D Position { get; set; }
-        public IPoint2D Target { get; set; }
-
         public Elf(int x, int y)
         {
             Position = new IPoint2D(x, y);
         }
+
+        public IPoint2D Position { get; set; }
+        public IPoint2D Target { get; set; }
 
         public void SearchDirection(Map map)
         {
@@ -96,7 +69,7 @@ public class _2022_23 : Problem
             Target = Position;
             int count = 0;
 
-            foreach(KeyValuePair<IVector2D, IVector2D[]> kv in Directions)
+            foreach (KeyValuePair<IVector2D, IVector2D[]> kv in Directions)
             {
                 int dirCount = kv.Value.Count(d => map[Position + d]);
                 count += dirCount;
@@ -132,43 +105,72 @@ public class _2022_23 : Problem
             return true;
         }
     }
-    public override void Solve()
+
+    private class Map
     {
-        List<Elf> elves = new();
+        private readonly bool[,] _map;
+        private readonly int[,] _targets;
+        private readonly int _xMax;
+        private readonly int _xMin;
+        private readonly int _yMax;
+        private readonly int _yMin;
 
-        for (int y = 0; y < Inputs.Length; y++)
-            for(int x = 0; x < Inputs[y].Length; x++)
-                if (Inputs[y][x] == '#')
-                    elves.Add(new Elf(x, y));
-
-        int moveCount = 0;
-        int round = 0;
-        do
+        public Map(List<Elf> elves)
         {
-            // Use a map to store all position
-            Map map = new(elves);
+            _xMin = int.MaxValue;
+            _yMin = int.MaxValue;
+            _xMax = int.MinValue;
+            _yMax = int.MinValue;
 
-            foreach (Elf elf in elves)
-                elf.SearchDirection(map);
+            foreach (Elf e in elves)
+            {
+                _xMin = Math.Min(_xMin, e.Position.X);
+                _xMax = Math.Max(_xMax, e.Position.X);
+                _yMin = Math.Min(_yMin, e.Position.Y);
+                _yMax = Math.Max(_yMax, e.Position.Y);
+            }
+            // Add 1 to all direction to allow elves moves
+            _xMin--;
+            _yMin--;
+            _xMax++;
+            _yMax++;
 
-            moveCount = elves.Count(e => e.TryMove(map));
+            _map = new bool[_xMax - _xMin + 1, _yMax - _yMin + 1];
+            _targets = new int[_xMax - _xMin + 1, _yMax - _yMin + 1];
 
-            KeyValuePair<IVector2D, IVector2D[]> kv = Directions.First();
-            Directions.Remove(kv);
-            Directions.Add(kv);
+            foreach (Elf e in elves)
+                _map[e.Position.X - _xMin, e.Position.Y - _yMin] = true;
+        }
 
-            /*Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine();
-            Console.WriteLine($"round: {round}");
-            map.Log();*/
+        public bool this[int x, int y] => _map[x - _xMin, y - _yMin];
+        public bool this[IPoint2D p] => this[p.X, p.Y];
 
-            if (round == 10)
-                AddSolution(map.CountEmptyTiles());
+        public void AddTarget(IPoint2D p)
+        {
+            _targets[p.X - _xMin, p.Y - _yMin]++;
+        }
 
-            round++;
-        } while (moveCount > 0);
+        public int CountEmptyTiles()
+        {
+            int count = 0;
+            for (int x = _xMin + 1; x < _xMax; x++)
+                for (int y = _yMin + 1; y < _yMax; y++)
+                    if (!this[x, y]) count++;
+            return count;
+        }
 
-        AddSolution(round);
+        public int GetTarget(IPoint2D p) => _targets[p.X - _xMin, p.Y - _yMin]++;
+
+        public void Log()
+        {
+            for (int y = _yMin; y < _yMax + 1; y++)
+            {
+                string line = string.Empty;
+                for (int x = _xMin; x < _xMax + 1; x++)
+                    line += this[x, y] ? "#" : ".";
+
+                Console.WriteLine(line);
+            }
+        }
     }
 }

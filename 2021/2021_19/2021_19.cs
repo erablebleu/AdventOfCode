@@ -1,5 +1,8 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/19
+/// </summary>
 public class _2021_19 : Problem
 {
     private static Matrix[] RotationsMatrix = new Matrix[]
@@ -35,43 +38,51 @@ public class _2021_19 : Problem
         new Matrix( new int[,] { { 0, 1, 0 }, { 0, 0, -1 }, { -1, 0, 0 } }),
     };
 
-    public override void Solve()
+    private List<Scanner> _data;
+
+    public override void Parse()
     {
-        List<Scanner> scanners = new();
+        _data = new List<Scanner>();
         foreach (var line in Inputs)
         {
             if (string.IsNullOrEmpty(line))
                 continue;
             if (line.StartsWith("---"))
-                scanners.Add(new Scanner { Number = int.Parse(line.Split(" ")[2]) });
+                _data.Add(new Scanner { Number = int.Parse(line.Split(" ")[2]) });
             else
-                scanners.Last().Beacons.Add(new Point3D(line.Split(",").Select(el => int.Parse(el))));
+                _data.Last().Beacons.Add(new Point3D(line.Split(",").Select(el => int.Parse(el))));
         }
-
-        scanners.First().Fix();
-
-        while(scanners.Any(s => !s.IsFixed))
-        {
-            Console.WriteLine(scanners.Count(s => s.IsFixed));
-            scanners.Where(s => !s.IsFixed).Any(sc => scanners.Where(s => s.IsFixed).Any(t => sc.Match(t)));
-        }
-
-        Solutions.Add($"{scanners.SelectMany(s => s.FixedBeacons).Distinct().Count()}");
-
-        int max = 0;
-        for(int i = 0; i < scanners.Count -1; i++)
-        {
-            for (int j = i + 1; j < scanners.Count; j++)
-            {
-                max = Math.Max(max, Math.Abs(scanners[i].Position.X - scanners[j].Position.X)
-                    + Math.Abs(scanners[i].Position.Y - scanners[j].Position.Y)
-                    + Math.Abs(scanners[i].Position.Z - scanners[j].Position.Z));
-            }
-        }
-        Solutions.Add($"{max}");
     }
 
-    internal class Matrix
+    public override object PartOne()
+    {
+        _data.First().Fix();
+
+        while (_data.Any(s => !s.IsFixed))
+        {
+            //Console.WriteLine(_data.Count(s => s.IsFixed));
+            _data.Where(s => !s.IsFixed).Any(sc => _data.Where(s => s.IsFixed).Any(t => sc.Match(t)));
+        }
+
+        return _data.SelectMany(s => s.FixedBeacons).Distinct().Count();
+    }
+
+    public override object PartTwo()
+    {
+        int max = 0;
+        for (int i = 0; i < _data.Count - 1; i++)
+        {
+            for (int j = i + 1; j < _data.Count; j++)
+            {
+                max = Math.Max(max, Math.Abs(_data[i].Position.X - _data[j].Position.X)
+                    + Math.Abs(_data[i].Position.Y - _data[j].Position.Y)
+                    + Math.Abs(_data[i].Position.Z - _data[j].Position.Z));
+            }
+        }
+        return max;
+    }
+
+    private class Matrix
     {
         private readonly int[,] _values;
 
@@ -90,7 +101,7 @@ public class _2021_19 : Problem
         }
     }
 
-    internal class Point3D
+    private class Point3D
     {
         public Point3D()
         { }
@@ -127,7 +138,6 @@ public class _2021_19 : Problem
 
         public static Point3D operator +(Point3D a, Point3D b) => new(a.X + b.X, a.Y + b.Y, a.Z + b.Z);
 
-        public override string ToString() => $"{X},{Y},{Z}"; 
         public override bool Equals(object obj)
         {
             if (obj is not Point3D p)
@@ -135,13 +145,16 @@ public class _2021_19 : Problem
 
             return p.X == X && p.Y == Y && p.Z == Z;
         }
+
         public override int GetHashCode()
         {
             return X.GetHashCode() ^ Y.GetHashCode() ^ Z.GetHashCode();
         }
+
+        public override string ToString() => $"{X},{Y},{Z}";
     }
 
-    internal class Scanner
+    private class Scanner
     {
         public List<Point3D> Beacons { get; set; } = new();
         public List<Point3D> FixedBeacons { get; set; } = new();
@@ -149,11 +162,13 @@ public class _2021_19 : Problem
         public int Number { get; set; }
         public Point3D Position { get; set; } = new Point3D();
         public Matrix Rotation { get; set; } = RotationsMatrix.First();
+
         public void Fix()
         {
             FixedBeacons = Beacons.Select(b => b * Rotation + Position).ToList();
             IsFixed = true;
         }
+
         public void Fix(Point3D position, Matrix rotation)
         {
             Position = position;
@@ -163,9 +178,9 @@ public class _2021_19 : Problem
 
         public bool Match(Scanner target)
         {
-            foreach(Matrix rotation in RotationsMatrix)
+            foreach (Matrix rotation in RotationsMatrix)
             {
-                foreach(Point3D p1 in target.FixedBeacons)
+                foreach (Point3D p1 in target.FixedBeacons)
                 {
                     foreach (Point3D p2 in Beacons)
                     {

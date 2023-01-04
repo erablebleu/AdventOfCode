@@ -1,14 +1,15 @@
-using AdventOfCode.Tools;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/11
+/// </summary>
 public class _2021_11 : Problem
 {
-    public int NextStep(ref int[,] grid)
+    private int[,] _data;
+
+    public static int NextStep(ref int[,] grid)
     {
         int cnt = 0;
-        int nextCnt = 0;
-
         int[,] next = new int[grid.GetLength(0), grid.GetLength(1)];
         bool[,] flash = new bool[grid.GetLength(0), grid.GetLength(1)];
 
@@ -16,6 +17,7 @@ public class _2021_11 : Problem
             for (int j = 0; j < grid.GetLength(0); j++)
                 grid[i, j]++;
 
+        int nextCnt;
         do
         {
             nextCnt = 0;
@@ -54,20 +56,26 @@ public class _2021_11 : Problem
         return cnt;
     }
 
-    public override void Solve()
+    public override void Parse()
     {
-        int[,] grid = Inputs.Select(l => l.Select(c => int.Parse(c.ToString()))).To2DArray();
+        _data = Inputs.Select(l => l.Select(c => int.Parse(c.ToString()))).To2DArray();
+    }
 
+    public override object PartOne()
+    {
         int cnt = 0;
         for (int i = 0; i < 100; i++)
-            cnt += NextStep(ref grid);
+            cnt += NextStep(ref _data);
 
-        Solutions.Add($"{cnt}");
+        return cnt;
+    }
 
-        cnt = 100;
-        while (NextStep(ref grid) < 100)
+    public override object PartTwo()
+    {
+        int cnt = 100;
+        while (NextStep(ref _data) < 100)
             cnt++;
 
-        Solutions.Add($"{cnt + 1}");
+        return cnt + 1;
     }
 }

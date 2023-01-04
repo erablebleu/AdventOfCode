@@ -30,3 +30,17 @@ public static class IntExtension
     public static int ResetBit(this int value, int bitIdx) => value & ~(1 << bitIdx);
     public static bool IsInRange(this int value, int min, int size) => value >= min && value < min + size;
 }
+
+public static class LongExtension
+{
+    public static bool GetBit(this long value, int bitIdx) => (value & 1L << bitIdx) != 0;
+    public static long SetBit(this long value, int bitIdx, bool state) => state ? SetBit(value, bitIdx) : ResetBit(value, bitIdx);
+    public static long SetBit(this long value, int bitIdx) => value | (1L << bitIdx);
+    public static long SetBits(this long value, params int[] bitIdx)
+    {
+        foreach (int idx in bitIdx)
+            value = value.SetBit(idx);
+        return value;
+    }
+    public static long ResetBit(this long value, int bitIdx) => value & ~(1L << bitIdx);
+}

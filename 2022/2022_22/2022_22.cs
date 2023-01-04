@@ -1,5 +1,8 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/22
+/// </summary>
 public class _2022_22 : Problem
 {
     private static IVector2D[] Directions = new IVector2D[]
@@ -10,22 +13,24 @@ public class _2022_22 : Problem
         new IVector2D(0, -1),
     };
 
+    private List<string> _instructions;
     private CubeMap _map;
     private int _sideLength;
     private int _yMax;
 
     private delegate IPoint2D MoveDelegate(IPoint2D p, ref IVector2D dir, out bool move);
 
-    public override void Solve()
+    public override void Parse()
     {
         _yMax = Array.IndexOf(Inputs, Inputs.First(l => string.IsNullOrWhiteSpace(l)));
         _sideLength = Math.Max(_yMax, Inputs.Take(_yMax).Max(l => l.Length)) / 4;
         _map = new CubeMap(_sideLength, Enumerable.Range(0, _yMax / _sideLength).Select(y => Enumerable.Range(0, 3 + (_yMax / _sideLength == 3 ? 1 : 0)).Select(x => GetValue(x * _sideLength, y * _sideLength) != ' ')).To2DArray());
-        List<string> instructions = ParseInstruction(Inputs[_yMax + 1]).ToList();
-
-        AddSolution(Emulate(instructions, GetNext));
-        AddSolution(Emulate(instructions, GetNext3D));
+        _instructions = ParseInstruction(Inputs[_yMax + 1]).ToList();
     }
+
+    public override object PartOne() => Emulate(_instructions, GetNext);
+
+    public override object PartTwo() => Emulate(_instructions, GetNext3D);
 
     private static int GetPassword(IPoint2D p, IVector2D dir) => 1000 * (p.Y + 1) + 4 * (p.X + 1) + Array.IndexOf(Directions, dir);
 

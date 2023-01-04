@@ -1,31 +1,11 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/08
+/// </summary>
 public class _2021_08 : Problem
 {
-    [Flags]
-    internal enum Segments
-    {
-        a = 0x0001,
-        b = 0x0002,
-        c = 0x0004,
-        d = 0x0008,
-        e = 0x0010,
-        f = 0x0020,
-        g = 0x0040,
-
-        N0 = a | b | c | e |f | g,
-        N1 = c | f,
-        N2 = a | c | d | e | g,
-        N3 = a | c | d | f | g,
-        N4 = b | c | d | f,
-        N5 = a | b | d | f | g,
-        N6 = a | b | d | e | f | g,
-        N7 = a | c | f,
-        N8 = a | b | c | d | e | f | g,
-        N9 = a | b | c | d | f | g,
-    }
-
-    internal static Dictionary<Segments, int> Numbers = new()
+    private static readonly Dictionary<Segments, int> Numbers = new()
     {
         { Segments.N0, 0 },
         { Segments.N1, 1 },
@@ -39,14 +19,42 @@ public class _2021_08 : Problem
         { Segments.N9, 9 },
     };
 
-    public override void Solve()
+    private SignalPattern[] _data;
+
+    [Flags]
+    private enum Segments
     {
-        SignalPattern[] signalPatterns = Inputs.Select(i => new SignalPattern(i)).ToArray();
-        Solutions.Add($"{signalPatterns.Sum(sp => sp.Value.Count(v => v.Length == 2 || v.Length == 4 || v.Length == 3 || v.Length == 7))}");
-        Solutions.Add($"{signalPatterns.Sum(sp => sp.Result)}");
+        a = 0x0001,
+        b = 0x0002,
+        c = 0x0004,
+        d = 0x0008,
+        e = 0x0010,
+        f = 0x0020,
+        g = 0x0040,
+
+        N0 = a | b | c | e | f | g,
+        N1 = c | f,
+        N2 = a | c | d | e | g,
+        N3 = a | c | d | f | g,
+        N4 = b | c | d | f,
+        N5 = a | b | d | f | g,
+        N6 = a | b | d | e | f | g,
+        N7 = a | c | f,
+        N8 = a | b | c | d | e | f | g,
+        N9 = a | b | c | d | f | g,
     }
 
-    internal class SignalPattern
+    public override void Parse()
+    {
+        _data = Inputs.Select(i => new SignalPattern(i)).ToArray();
+    }
+
+    public override object PartOne() => _data.Sum(sp => sp.Value.Count(v => v.Length == 2 || v.Length == 4 || v.Length == 3 || v.Length == 7));
+
+
+    public override object PartTwo() => _data.Sum(sp => sp.Result);
+
+    private class SignalPattern
     {
         private static Dictionary<char, char>[] _maps;
         private Dictionary<char, char> _map;
@@ -56,7 +64,7 @@ public class _2021_08 : Problem
             char[] values = new char[] { 'a', 'b', 'c', 'd', 'e', 'f', 'g' };
             List<string> combinations = new() { string.Empty };
 
-            for(int i = 0; i < values.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
                 List<string> next = new();
                 foreach (string val in combinations)
@@ -99,6 +107,7 @@ public class _2021_08 : Problem
         }
 
         private static Segments GetSegments(string pattern) => (Segments)Enum.Parse(typeof(Segments), string.Join<char>(",", pattern));
+
         private static string Transpose(string value, Dictionary<char, char> map)
         {
             string result = string.Empty;

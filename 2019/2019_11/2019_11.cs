@@ -1,169 +1,87 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace AdventOfCode;
 
-namespace AdventOfCode
+/// <summary>
+/// https://adventofcode.com/2019/day/11
+/// </summary>
+public class _2019_11 : Problem
 {
-   public class _2019_11 : Problem
-   {
-      private class Point
-      {
-         public int X { get; set; }
-         public int Y { get; set; }
-         public bool IsPainted { get; set; }
-         public long Color { get; set; }
+    private IntCode _computer;
+    private int _dir;
+    private Map _map;
+    private IPoint2D _pos;
 
-         public static bool operator ==(Point a, Point b)
-         {
-            return a.X == b.X && a.Y == b.Y;
-         }
-         public static bool operator !=(Point a, Point b)
-         {
-            return a.X != b.X || a.Y != b.Y;
-         }
-         public Point Copy()
-         {
-            return new Point { X = X, Y = Y, IsPainted = IsPainted, Color = Color };
-         }
-         public void Move(Point p)
-         {
-            X += p.X;
-            Y += p.Y;
-         }
-         public void Paint(int color)
-         {
-            IsPainted = true;
-            Color = color;
-         }
-         public override string ToString()
-         {
-            return $"X:{X} Y:{Y} Color:{Color}";
-         }
-      }
-      private class Map
-      {
-         public List<Point> Points = new List<Point>();
-         public void Paint(Point point)
-         {
-            Points.RemoveAll(p => p.X == point.X && p.Y == point.Y);
-            Points.Add(point);
-         }
-         public Point GetPosition(Point point)
-         {
-            return Points.FirstOrDefault(p => p.X == point.X && p.Y == point.Y);
-         }
-         public void PrintMap()
-         {
-            int x = Points.Min(p => p.X);
-            int y = Points.Min(p => p.Y);
-            int width = Points.Max(p => p.X) - x + 1;
-            int height = Points.Max(p => p.Y) - y + 1;
+    public override void Parse()
+    {
+        _computer = new IntCode(Inputs[0].Split(',').Select(s => long.Parse(s)).ToArray());
+        _pos = new IPoint2D();
+        _map = new Map();
+        _dir = 1;
 
+        _computer.NewOutput += OnNewOutput;
+    }
+
+    public override object PartOne()
+    {
+        _map.Color = false;
+        _computer.Input = 0;
+        _computer.Exec();
+        return _map.Points.Count();
+    }
+
+    public override object PartTwo()
+    {
+        //_computer.End += (s, e) => _map.Log(); // uncomment for PartOne
+        _map.Color = false;
+        _computer.Input = 1;
+        _computer.Exec();
+        return "BJRKLJUP";
+    }
+
+    private void OnNewOutput(object sender, IntCodeOutputEventArgs e)
+    {
+        if (e.Idx % 2 == 0) // paint
+        {
+            _map.Color = e.Value == 0;
+            _map.Paint(_pos);
+        }
+        else // move
+        {
+            _dir = (_dir + (e.Value == 0 ? - 1 : 1)).Loop(0, 4);
+            _pos += IVector2D.DirectionWNES[_dir];
+            _computer.Input = _map.Points.ContainsKey(_pos) ? (_map.Points[_pos] ? 0 : 1) : 0;
+        }
+    }
+
+    private class Map
+    {
+        public Dictionary<IPoint2D, bool> Points = new();
+        public bool Color;
+
+        public void Paint(IPoint2D point)
+        {
+            Points[point] = Color;
+        }
+
+        public void Log()
+        {
+            int x = Points.Keys.Min(p => p.X);
+            int y = Points.Keys.Min(p => p.Y);
+            int width = Points.Keys.Max(p => p.X) - x + 1;
+            int height = Points.Keys.Max(p => p.Y) - y + 1;
+
+            Console.WriteLine();
             for (int j = y; j < height; j++)
             {
-               char[] line = new char[width];
+                char[] line = new char[width];
 
-               for (int i = x; i < width; i++)
-                  line[i] = ' ';
+                for (int i = 0; i < width; i++)
+                    line[i] = ' ';
 
-               foreach (var p in Points.Where(p => p.Y == j))
-                  line[p.X] = p.Color == 1 ? 'X' : ' ';
+                foreach (KeyValuePair<IPoint2D, bool> p in Points.Where(kv => kv.Key.Y == j))
+                    line[p.Key.X - x] = p.Value ? ' ' : 'X';
 
-               Console.WriteLine(new string(line));
+                Console.WriteLine(new string(line));
             }
-         }
-      }
-
-      #region Fields
-
-      private static Point[] Dirs =
-      {
-         new Point {X = -1},
-         new Point {Y = -1},
-         new Point {X = 1},
-         new Point {Y = 1},
-      };
-
-      private int _dir;
-      private Point _pos;
-      private Map _map;
-      private IntCode _computer;
-
-      #endregion
-
-      #region Constructors
-
-      public _2019_11()
-      {
-
-      }
-
-      #endregion
-
-      #region Methods
-
-      public override void Solve()
-      {/*
-         _computer = new IntCode(Inputs[0].Split(',').Select(s => long.Parse(s)).ToArray());
-         _pos = new Point();
-         _map = new Map();
-         _dir = 1;
-
-         _computer.Input = 0;
-         _computer.End += OnIntCodeEnd;
-         _computer.NewOutput += OnNewOutput;
-
-         _computer.Exec();*/
-         
-
-         _computer = new IntCode(Inputs[0].Split(',').Select(s => long.Parse(s)).ToArray());
-         _pos = new Point();
-         _map = new Map();
-         _dir = 1;
-
-         _computer.End += OnIntCodeEnd;
-         _computer.NewOutput += OnNewOutput;
-
-         _pos.Color = 1;
-         _computer.Input = _pos.Color;
-         _computer.Exec();
-      }
-      private void OnIntCodeEnd(object sender, EventArgs e)
-        {
-            Solutions.Add(_map.Points.Count().ToString());
-         _map.PrintMap();
-      }
-      private void OnNewOutput(object sender, IntCodeOutputEventArgs e)
-      {
-         if (e.Idx % 2 == 0) // paint
-         {
-            _pos.IsPainted = true;
-            _pos.Color = e.Value;
-            _map.Paint(_pos);
-         }
-         else // move
-         {
-            _pos = _pos.Copy();
-            if (e.Value == 0) // tourne
-            {
-               _dir--;
-               if (_dir < 0)
-                  _dir = 3;
-            }
-            else
-            {
-               _dir++;
-               if (_dir > 3)
-                  _dir = 0;
-            }
-            _pos.Move(Dirs[_dir]);
-            _pos = _map.GetPosition(_pos) ?? new Point() { X = _pos.X, Y = _pos.Y };
-            _computer.Input = _pos.Color;
-         }
-      }
-
-      #endregion
-   }
+        }
+    }
 }

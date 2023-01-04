@@ -1,42 +1,28 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+namespace AdventOfCode;
 
-namespace AdventOfCode
+/// <summary>
+/// https://adventofcode.com/2019/day/01
+/// </summary>
+public class _2019_01 : Problem
 {
-   public class _2019_01 : Problem
-   {
-      #region Constructors
+    private int[] _data;
 
-      public _2019_01()
-      {
-      }
+    public override void Parse()
+    {
+        _data = Inputs.Select(l => int.Parse(l)).ToArray();
+    }
 
-      #endregion
+    public override object PartOne() => _data.Sum(e => GetFuel(e));
 
-      #region Methods
+    public override object PartTwo() => _data.Sum(e => GetRecursiveFuel(e));
 
-      public override void Solve()
-      {
-         GetRecursiveFuel(1969);
-         Solutions.Add(Inputs.Sum(c => GetFuel(int.Parse(c))).ToString());
-         Solutions.Add(Inputs.Sum(c => GetRecursiveFuel(int.Parse(c))).ToString());
-      }
+    private static int GetFuel(int mass) => Math.Max(mass / 3 - 2, 0);
 
-      private int GetFuel(int mass)
-      {
-         return Math.Max(mass / 3 - 2, 0);
-      }
-      private int GetRecursiveFuel(int mass)
-      {
-         int fuel = 0;
-         while (mass > 0)
+    private static int GetRecursiveFuel(int mass)
+    {
+        int fuel = 0;
+        while (mass > 0)
             fuel += mass = GetFuel(mass);
-         return fuel;
-      }
-
-      #endregion
-   }
+        return fuel;
+    }
 }

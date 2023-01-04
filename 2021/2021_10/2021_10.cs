@@ -1,28 +1,46 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/10
+/// </summary>
 public class _2021_10 : Problem
 {
-    public override void Solve()
+    private List<(long ErrorScore, long CompletionScore)> _data;
+
+    public override void Parse()
     {
-        var data = Inputs.Select(l => GetScore(l)).ToList();
-
-        Solutions.Add(data.Sum(d => d.ErrorScore).ToString());
-
-        data = data.Where(d => d.CompletionScore > 0).ToList();
-
-        long score = data.OrderBy(d => d.CompletionScore).ElementAt(data.Count / 2).CompletionScore;
-
-        if (data.Where(d => d.CompletionScore > score).Count() == data.Where(d => d.CompletionScore < score).Count())
-            Console.WriteLine("yes");
-
-        Solutions.Add(data.OrderBy(d => d.CompletionScore).ElementAt(data.Count / 2).CompletionScore.ToString());
+        _data = Inputs.Select(l => GetScore(l)).ToList();
     }
-    private (long ErrorScore, long CompletionScore) GetScore(string line)
+
+    public override object PartOne() => _data.Sum(d => d.ErrorScore);
+
+    public override object PartTwo()
+    {
+        _data = _data.Where(d => d.CompletionScore > 0).ToList();
+
+        long score = _data.OrderBy(d => d.CompletionScore).ElementAt(_data.Count / 2).CompletionScore;
+
+        //if (_data.Where(d => d.CompletionScore > score).Count() == _data.Where(d => d.CompletionScore < score).Count())
+        //    Console.WriteLine("yes");
+
+        return _data.OrderBy(d => d.CompletionScore).ElementAt(_data.Count / 2).CompletionScore;
+    }
+
+    private static int GetCompletionValue(char c) => c switch
+    {
+        '(' => 1,
+        '[' => 2,
+        '{' => 3,
+        '<' => 4,
+        _ => 0,
+    };
+
+    private static (long ErrorScore, long CompletionScore) GetScore(string line)
     {
         List<char> opens = new();
-        foreach(char c in line)
+        foreach (char c in line)
         {
-            switch(c)
+            switch (c)
             {
                 case '(':
                 case '[':
@@ -37,18 +55,21 @@ public class _2021_10 : Problem
                     else
                         return (3, 0);
                     break;
+
                 case ']':
                     if (opens.LastOrDefault() == '[')
                         opens.RemoveAt(opens.Count - 1);
                     else
                         return (57, 0);
                     break;
+
                 case '}':
                     if (opens.LastOrDefault() == '{')
                         opens.RemoveAt(opens.Count - 1);
                     else
-                        return (1197, 0) ;
+                        return (1197, 0);
                     break;
+
                 case '>':
                     if (opens.LastOrDefault() == '<')
                         opens.RemoveAt(opens.Count - 1);
@@ -64,13 +85,4 @@ public class _2021_10 : Problem
 
         return (0, completionScore);
     }
-
-    private static int GetCompletionValue(char c) => c switch
-    {
-        '(' => 1,
-        '[' => 2,
-        '{' => 3,
-        '<' => 4,
-        _ => 0,
-    };
 }

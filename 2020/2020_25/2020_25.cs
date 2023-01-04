@@ -1,46 +1,47 @@
-namespace AdventOfCode
+namespace AdventOfCode;
+
+/// <summary>
+/// https://adventofcode.com/2020/day/25
+/// </summary>
+public class _2020_25 : Problem
 {
-    public class _2020_25 : Problem
+    public override void Parse()
     {
-        #region Methods
+    }
 
-        public override void Solve()
-        {
-            long cardPublicKey = long.Parse(Inputs[0]);
-            long doorPublicKey = long.Parse(Inputs[1]);
+    public override object PartOne()
+    {
+        long cardPublicKey = long.Parse(Inputs[0]);
+        long doorPublicKey = long.Parse(Inputs[1]);
 
-            //cardPublicKey = 5764801;
-            //doorPublicKey = 17807724;
+        //cardPublicKey = 5764801;
+        //doorPublicKey = 17807724;
 
-            int cardLoopSize = GetLoopSize(cardPublicKey);
-            int doorLoopSize = GetLoopSize(doorPublicKey);
+        int doorLoopSize = GetLoopSize(doorPublicKey);
 
-            long cardEncryptionKey = GetTransformedKey(cardPublicKey, doorLoopSize);
-            long doorEncryptionKey = GetTransformedKey(doorPublicKey, cardLoopSize);
+        return GetTransformedKey(cardPublicKey, doorLoopSize);
+    }
 
-            Solutions.Add($"{cardEncryptionKey}");
-        }
+    public override object PartTwo() => "Merry Christmas!";
 
-        public long GetTransformedKey(long subjectNumber, long loopSize)
-        {
-            long res = 1;
+    private static int GetLoopSize(long value, int subjectNumber = 7)
+    {
+        long res = 1;
+        int i;
 
-            for(int i =0; i < loopSize; i++)
-                res = (res * subjectNumber) % 20201227;
+        for (i = 0; res != value; i++)
+            res = res * subjectNumber % 20201227;
 
-            return res;
-        }
-        public int GetLoopSize(long value, int subjectNumber = 7)
-        {
-            long res = 1;
-            int i;
+        return i;
+    }
 
-            for (i = 0; res != value; i++)
-                res = (res * subjectNumber) % 20201227;
+    private static long GetTransformedKey(long subjectNumber, long loopSize)
+    {
+        long res = 1;
 
-            return i;
-        }
+        for (int i = 0; i < loopSize; i++)
+            res = res * subjectNumber % 20201227;
 
-        #endregion
+        return res;
     }
 }

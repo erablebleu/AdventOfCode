@@ -226,9 +226,16 @@ internal class SnailfishNumberPart
     public override string ToString() => IsInt ? Value.ToString() : Number.ToString();
 }
 
+/// <summary>
+/// https://adventofcode.com/2021/day/18
+/// </summary>
 public class _2021_18 : Problem
 {
-    public override void Solve()
+    public override void Parse()
+    {
+    }
+
+    public override object PartOne()
     {
         SnailfishNumber[] numbers = Inputs.Select(l => new SnailfishNumber(l)).ToArray();
         SnailfishNumber sum = numbers.First();
@@ -238,10 +245,15 @@ public class _2021_18 : Problem
             sum += numbers[i];
             sum.Reduce();
         }
-        Solutions.Add($"{sum.GetMagnitude()}");
 
-        numbers = Inputs.Select(l => new SnailfishNumber(l)).ToArray();
+        return sum.GetMagnitude();
+    }
+
+    public override object PartTwo()
+    {
+        SnailfishNumber[] numbers = Inputs.Select(l => new SnailfishNumber(l)).ToArray();
         int maxMagn = 0;
+
         for (int i = 0; i < Inputs.Length - 1; i++)
         {
             for (int j = i + 1; j < Inputs.Length; j++)
@@ -250,19 +262,7 @@ public class _2021_18 : Problem
                 maxMagn = Math.Max(maxMagn, (new SnailfishNumber(Inputs[j]) + new SnailfishNumber(Inputs[i])).Reduce().GetMagnitude());
             }
         }
-        Solutions.Add($"{maxMagn}");
 
-        //string[] examples =
-        //{
-        //    "[[[[[9,8],1],2],3],4]",
-        //    "[7,[6,[5,[4,[3,2]]]]]",
-        //    "[[6,[5,[4,[3,2]]]],1]",
-        //    "[[3,[2,[1,[7,3]]]],[6,[5,[4,[3,2]]]]]",
-        //    "[[3,[2,[8,0]]],[9,[5,[4,[3,2]]]]]",
-        //};
-        //foreach(string example in examples)
-        //{
-        //    Console.WriteLine($"{example} becomes {new SnailfishNumber(example).Reduce()}");
-        //}
+        return maxMagn;
     }
 }

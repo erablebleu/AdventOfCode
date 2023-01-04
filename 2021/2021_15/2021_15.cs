@@ -1,17 +1,30 @@
-using AdventOfCode.Tools;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/15
+/// </summary>
 public class _2021_15 : Problem
 {
-    public override void Solve()
-    {
-        int[,] grid = Inputs.Select(l => l.Select(c => int.Parse(c.ToString()))).To2DArray();
+    private int[,] _data;
 
-        Solutions.Add($"{GetLast(GetRiskGrid(grid))}");
-        Solutions.Add($"{GetLast(GetRiskGrid2(grid))}");
-        Solutions.Add($"{GetLast(GetRiskGrid(RepeatGrid(grid, 5)))}");
-        Solutions.Add($"{GetLast(GetRiskGrid2(RepeatGrid(grid, 5)))}");
+    public override void Parse()
+    {
+        _data = Inputs.Select(l => l.Select(c => int.Parse(c.ToString()))).To2DArray();
+    }
+
+    public override object PartOne() => GetLast(GetRiskGrid2(_data)); // GetLast(GetRiskGrid(_data));
+
+    public override object PartTwo() => GetLast(GetRiskGrid2(RepeatGrid(_data, 5))); // GetLast(GetRiskGrid(RepeatGrid(_data, 5)));
+
+    private static IEnumerable<System.Drawing.Point> GetAdjPoint(int[,] grid, System.Drawing.Point p) => GetAdjPoint(grid, p.X, p.Y);
+
+    private static IEnumerable<System.Drawing.Point> GetAdjPoint(int[,] grid, int x, int y)
+    {
+        if (x > 0) yield return new System.Drawing.Point(x - 1, y);
+        if (y > 0) yield return new System.Drawing.Point(x, y - 1);
+        if (x < grid.GetLength(0) - 1) yield return new System.Drawing.Point(x + 1, y);
+        if (y < grid.GetLength(1) - 1) yield return new System.Drawing.Point(x, y + 1);
+        yield break;
     }
 
     private static List<System.Drawing.Point> GetDiag(int[,] grid, int x)
@@ -31,22 +44,12 @@ public class _2021_15 : Problem
 
     private static int GetLast(int[,] grid) => grid[grid.GetLength(0) - 1, grid.GetLength(1) - 1];
 
-
     private static IEnumerable<int> GetPrevPoint(int[,] risk, System.Drawing.Point p)
     {
         if (p.X > 0)
             yield return risk[p.X - 1, p.Y];
         if (p.Y > 0)
             yield return risk[p.X, p.Y - 1];
-        yield break;
-    }
-    private static IEnumerable<System.Drawing.Point> GetAdjPoint(int[,] grid, System.Drawing.Point p) => GetAdjPoint(grid, p.X, p.Y);
-    private static IEnumerable<System.Drawing.Point> GetAdjPoint(int[,] grid, int x, int y)
-    {
-        if (x > 0) yield return new System.Drawing.Point(x - 1, y);
-        if (y > 0) yield return new System.Drawing.Point(x, y - 1);
-        if (x < grid.GetLength(0) - 1) yield return new System.Drawing.Point(x + 1, y);
-        if (y < grid.GetLength(1) - 1) yield return new System.Drawing.Point(x, y + 1);
         yield break;
     }
 
@@ -88,7 +91,7 @@ public class _2021_15 : Problem
             System.Drawing.Point p = interrest.Distinct().OrderBy(p => risk[p.X, p.Y]).First();
             interrest.Remove(p);
 
-            foreach(var np in GetAdjPoint(grid, p))
+            foreach (var np in GetAdjPoint(grid, p))
             {
                 if (risk[np.X, np.Y] <= grid[np.X, np.Y] + risk[p.X, p.Y])
                     continue;

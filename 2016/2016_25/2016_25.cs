@@ -29,10 +29,7 @@ public class _2016_25 : Problem
                 return a;
     }
 
-    public override object PartTwo()
-    {
-        return null;
-    }
+    public override object PartTwo() => "Merry Christmas!";
 
     private static bool Emulate(Instruction[] instructions, int a = 0, int b = 0, int c = 0, int d = 0)
     {

@@ -1,23 +1,22 @@
-using static AdventOfCode.Redditor;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/01
+/// </summary>
 public class _2022_01 : Problem
 {
-    public class Elf
-    {
+    private List<int> _elves;
 
-    }
-    public override void Solve()
+    public override void Parse()
     {
-        List<int> elvesTotal = new();
+        _elves = new();
         int cnt = 0;
         cnt = 0;
         foreach (string line in Inputs)
         {
             if (string.IsNullOrEmpty(line))
             {
-                elvesTotal.Add(cnt);
+                _elves.Add(cnt);
                 cnt = 0;
             }
             else
@@ -25,8 +24,9 @@ public class _2022_01 : Problem
                 cnt += int.Parse(line);
             }
         }
-
-        Solutions.Add($"{elvesTotal.OrderByDescending(v => v).First()}");
-        Solutions.Add($"{elvesTotal.OrderByDescending(v => v).Take(3).Sum()}");
     }
+
+    public override object PartOne() => _elves.OrderByDescending(v => v).First();
+
+    public override object PartTwo() => _elves.OrderByDescending(v => v).Take(3).Sum();
 }

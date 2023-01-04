@@ -1,32 +1,22 @@
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2021/day/06
+/// </summary>
 public class _2021_06 : Problem
 {
-    internal static class DictionaryExtension
+    private Dictionary<int, long> _state;
+
+    public override void Parse()
     {
-        public static void AddOrInc(Dictionary<int, long> dic, int key, long value)
-        {
-            if (dic.ContainsKey(key))
-                dic[key] += value;
-            else
-                dic.Add(key, value);
-        }
+        _state = Inputs.First().Split(",").Select(v => int.Parse(v)).GroupBy(v => v).ToDictionary(g => g.Key, g => (long)g.Count());
     }
 
-    public override void Solve()
-    {
-        Dictionary<int, long> state = Inputs.First().Split(",").Select(v => int.Parse(v)).GroupBy(v => v).ToDictionary(g => g.Key, g => (long)g.Count());
+    public override object PartOne() => Simulate(_state, 80).Sum(kv => kv.Value);
 
-        Simulate(ref state, 80);        
+    public override object PartTwo() => Simulate(_state, 256).Sum(kv => kv.Value);
 
-        Solutions.Add($"{state.Sum(kv => kv.Value)}");
-
-        Simulate(ref state, 256 - 80);
-
-        Solutions.Add($"{state.Sum(kv => kv.Value)}");
-    }
-
-    private void Simulate(ref Dictionary<int, long> state, int dayCount)
+    private static Dictionary<int, long> Simulate(Dictionary<int, long> state, int dayCount)
     {
         for (int i = 0; i < dayCount; i++)
         {
@@ -44,6 +34,19 @@ public class _2021_06 : Problem
             }
 
             state = newState;
+        }
+
+        return state;
+    }
+
+    private static class DictionaryExtension
+    {
+        public static void AddOrInc(Dictionary<int, long> dic, int key, long value)
+        {
+            if (dic.ContainsKey(key))
+                dic[key] += value;
+            else
+                dic.Add(key, value);
         }
     }
 }

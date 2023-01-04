@@ -1,55 +1,40 @@
-using AdventOfCode.Tools;
-using static AdventOfCode._2022_15;
-
 namespace AdventOfCode;
 
+/// <summary>
+/// https://adventofcode.com/2022/day/15
+/// </summary>
 public class _2022_15 : Problem
 {
-    public class Sensor
-    {
-        public IPoint2D Position { get; set; }
-        public IPoint2D Beacon { get; set; }
-        public int Distance { get; set; }
-        public Sensor(string line)
-        {
-            string[] el = line.Split(": closest beacon is at ");
-            Position = GetPoint(el[0].Replace("Sensor at ", ""));
-            Beacon = GetPoint(el[1]);
-            Distance = Math.Abs(Position.X - Beacon.X) + Math.Abs(Position.Y - Beacon.Y);
+    private List<Sensor> _sensors;
 
-        }
-        public static IPoint2D GetPoint(string value)
-        {
-            string[] el = value.Split(", ");
-            return new IPoint2D(int.Parse(el[0].Replace("x=", "")), int.Parse(el[1].Replace("y=", "")));
-        }
-        public bool Reach(int y)
-        {
-            return Math.Abs(Position.Y - y) <= Distance;
-        }
-    }
-    public override void Solve()
+    public override void Parse()
     {
-        List<Sensor> sensors = Inputs.Select(l => new Sensor(l)).ToList();
-        List<IPoint2D> beacons = sensors.Select(s => s.Beacon).ToList();
+        _sensors = Inputs.Select(l => new Sensor(l)).ToList();
+    }
+
+    public override object PartOne()
+    {
+        List<IPoint2D> beacons = _sensors.Select(s => s.Beacon).ToList();
 
         int yTarget = 2000000;
-        IMultiRange mr = GetMr(sensors, yTarget);
+        IMultiRange mr = GetMr(_sensors, yTarget);
         int bc = beacons.Where(b => b.Y == yTarget).Select(b => b.X).Distinct().Where(x => mr.Ranges.Any(r => r.Contain(x))).Count();
-        Solutions.Add($"{mr.Ranges.Sum(r => r.End - r.Start + 1) - bc}");
-
-        for(int y = 0; y < 4000000; y++)
-        {
-            mr = GetMr(sensors, y);
-            int? x = mr.GetOutRange(4000000);
-            if(x.HasValue)
-            {
-                Solutions.Add($"{GetTuningFrequency(x.Value, y)}");
-
-                break;
-            }
-        }
+        return mr.Ranges.Sum(r => r.End - r.Start + 1) - bc;
     }
+
+    public override object PartTwo()
+    {
+        for (int y = 0; y < 4000000; y++)
+        {
+            IMultiRange mr = GetMr(_sensors, y);
+            int? x = mr.GetOutRange(4000000);
+            if (x.HasValue)
+                return GetTuningFrequency(x.Value, y);
+        }
+
+        return null;
+    }
+
     private static IMultiRange GetMr(List<Sensor> sensors, int y)
     {
         IMultiRange mr = new();
@@ -63,5 +48,32 @@ public class _2022_15 : Problem
         }
         return mr;
     }
-    public static long GetTuningFrequency(long x, long y) => x * 4000000 + y;
+
+    private static long GetTuningFrequency(long x, long y) => x * 4000000 + y;
+
+    private class Sensor
+    {
+        public Sensor(string line)
+        {
+            string[] el = line.Split(": closest beacon is at ");
+            Position = GetPoint(el[0].Replace("Sensor at ", ""));
+            Beacon = GetPoint(el[1]);
+            Distance = Math.Abs(Position.X - Beacon.X) + Math.Abs(Position.Y - Beacon.Y);
+        }
+
+        public IPoint2D Beacon { get; set; }
+        public int Distance { get; set; }
+        public IPoint2D Position { get; set; }
+
+        public static IPoint2D GetPoint(string value)
+        {
+            string[] el = value.Split(", ");
+            return new IPoint2D(int.Parse(el[0].Replace("x=", "")), int.Parse(el[1].Replace("y=", "")));
+        }
+
+        public bool Reach(int y)
+        {
+            return Math.Abs(Position.Y - y) <= Distance;
+        }
+    }
 }
