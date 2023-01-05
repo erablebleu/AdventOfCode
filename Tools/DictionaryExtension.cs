@@ -27,10 +27,18 @@ public static class DictionaryExtension
     {
         if (dic.ContainsKey(key))
             return dic[key];
-        var obj = create();
-        dic.Add(key, obj);
-        return obj;
+        T2 value = create();
+        dic.Add(key, value);
+        return value;
     }
+    public static T2 GetOrAdd<T1, T2>(this Dictionary<T1, T2> dic, T1 key, T2 value)
+    {
+        if (dic.ContainsKey(key))
+            return dic[key];
+        dic.Add(key, value);
+        return value;
+    }
+
     public static T2 AddOrUpdate<T1, T2>(this Dictionary<T1, T2> dic, T1 key, T2 value, Func<T2, T2> update)
     {
         if (dic.ContainsKey(key))
