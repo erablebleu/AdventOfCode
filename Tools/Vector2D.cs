@@ -51,6 +51,7 @@ public struct IVector2D
     public static IVector2D East = new(1, 0);
     public static IVector2D West = new(-1, 0);
     public static IVector2D[] DirectionNESW = new IVector2D[] { North, East, South, West };
+    public static IVector2D[] DirectionNWSE = new IVector2D[] { North, West, South, East };
     public static IVector2D[] DirectionNSEW = new IVector2D[] { North, South, East, West };
     public static IVector2D[] DirectionWNES = new IVector2D[] { West, North, East, South };
     public static IVector2D[] Direction8 = new IVector2D[] { West, new IVector2D(-1, -1), North, new IVector2D(1, -1), East, new IVector2D(1, 1), South, new IVector2D(-1, 1) };
@@ -75,6 +76,15 @@ public struct IVector2D
     public static IVector2D operator /(IVector2D a, int b) => new(a.X / b, a.Y / b);
 
     public static IVector2D operator +(IVector2D a, IVector2D b) => new(a.X + b.X, a.Y + b.Y);
+    
+    public static bool operator ==(IVector2D a, IVector2D b) => a.X == b.X && a.Y == b.Y;
+
+    public static bool operator !=(IVector2D a, IVector2D b) => a.X != b.X || a.Y != b.Y;
+
+    public override bool Equals([NotNullWhen(true)] object obj)
+    {
+        return obj is IVector2D p && p.X == X && p.Y == Y;
+    }
 
     public override string ToString() => $"{X}, {Y}";
 }

@@ -7,7 +7,7 @@ namespace AdventOfCode
 
         private static void Main(string[] args)
         {
-            SolveBatch(2017, 1, 1);
+            SolveBatch(2017, 1, 3);
         }
 
         private static void Solve(int year, int day, bool showData = false)
@@ -84,7 +84,7 @@ namespace AdventOfCode
                 Stopwatch sw = new();
                 if (pb is null)
                 {
-                    Console.WriteLine($"               │                                   │                                   │*");
+                    Console.WriteLine($"               │                                         │                                         │*");
                     continue;
                 }
                 sw.Restart();
