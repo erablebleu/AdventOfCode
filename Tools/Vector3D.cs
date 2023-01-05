@@ -67,5 +67,15 @@ public struct IVector3D
     public static IVector3D operator *(IVector3D a, double b) => new((int)(a.X * b), (int)(a.Y * b), (int)(a.Z * b));
     public static IVector3D operator /(IVector3D a, double b) => new((int)(a.X / b), (int)(a.Y / b), (int)(a.Z / b));
 
+    public static IVector3D[] HexagonalDirections = new IVector3D[]
+    {
+        new IVector3D(0, 1, -1), // n
+        new IVector3D(-1, 1, 0), // nw
+        new IVector3D(-1, 0, 1), // sw
+        new IVector3D(0, -1, 1), // s
+        new IVector3D(1, -1, 0), // se
+        new IVector3D(1, 0, -1), // ne
+    };
+
     public override string ToString() => $"{X}, {Y}";
 }
