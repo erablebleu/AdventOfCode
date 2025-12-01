@@ -36,5 +36,22 @@ namespace AdventOfCode.Tools
                     result[y, x] = src[x, y];
             return result;
         }
+        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> src, T delimiter)
+        {
+            List<T> result = [];
+            foreach(T item in src)
+            {
+                if(item.Equals(delimiter))
+                {
+                    yield return result;
+                    result = [];
+                }
+                else
+                    result.Add(item);
+            }
+
+            if(result.Count != 0)
+                yield return result;
+        }
     }
 }
