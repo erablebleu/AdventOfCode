@@ -7,7 +7,7 @@ internal class Program
 
     private static void Main(string[] args)
     {
-        SolveBatch(2018, 1, 1);
+        SolveBatch(2025, 1, 1);
     }
 
     private static void Solve(int year, int day, bool showData = false)
@@ -75,12 +75,7 @@ internal class Program
                 Console.WriteLine($"├─────────┼───────────────┼─────────────────────────────────────────┼─────────────────────────────────────────┤");
 
             Console.Write($"│ {y} {d:D2} │");
-            (int l, int r) = Console.GetCursorPosition();
-            Console.Write($"    generating class and downloading data");
             Problem pb = Problem.Get(y, d);
-            Console.SetCursorPosition(l, r);
-            Console.Write($"                                         ");
-            Console.SetCursorPosition(l, r);
             Stopwatch sw = new();
             if (pb is null)
             {

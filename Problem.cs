@@ -11,7 +11,7 @@ namespace AdventOfCode;
 
 public abstract class Problem
 {
-    private static readonly string ProjectDir = Environment.CurrentDirectory + @"\..\..\..\";
+    private static string ProjectDir => Path.GetFullPath(Path.Combine(Assembly.GetExecutingAssembly().Location, @"..\..\..\..\"));
     private static readonly string Session = GetSession();
 
     public Problem()
@@ -82,7 +82,7 @@ public abstract class Problem
 
     public static string GetSession()
     {
-        string filePath = Path.Combine(Environment.CurrentDirectory + @"\..\..\..\", "session.key");
+        string filePath = Path.Combine(ProjectDir, "session.key");        
 
         if (File.Exists(filePath))
             return File.ReadAllText(filePath);
