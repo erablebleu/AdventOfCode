@@ -64,7 +64,7 @@ public class _2025_04 : Problem
         long result = 0;
         long removed;
         char[,] data = _data;
-        char[,] next = _data;
+        char[,] next = new char[_yMax, _xMax];
 
         do
         {
@@ -89,8 +89,7 @@ public class _2025_04 : Problem
             }
 
             result += removed;
-            data = next;
-            next = new char[_yMax, _xMax];
+            (data, next) = (next, data);
         }
         while(removed > 0);
 
