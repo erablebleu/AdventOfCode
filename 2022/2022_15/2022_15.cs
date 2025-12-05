@@ -18,7 +18,7 @@ public class _2022_15 : Problem
 
         int yTarget = 2000000;
         IMultiRange mr = GetMr(_sensors, yTarget);
-        int bc = beacons.Where(b => b.Y == yTarget).Select(b => b.X).Distinct().Where(x => mr.Ranges.Any(r => r.Contain(x))).Count();
+        int bc = beacons.Where(b => b.Y == yTarget).Select(b => b.X).Distinct().Where(x => mr.Ranges.Any(r => r.Contains(x))).Count();
         return mr.Ranges.Sum(r => r.End - r.Start + 1) - bc;
     }
 

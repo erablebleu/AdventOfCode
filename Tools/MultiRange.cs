@@ -1,35 +1,23 @@
 ﻿namespace AdventOfCode.Tools;
 
-public class IRange
+public class IRange(int start, int end)
 {
-    public IRange(int start, int end)
-    {
-        Start = start;
-        End = end;
-    }
+    public int End = end;
+    public int Start = start;
 
-    public int End;
-    public int Start;
-
-    public bool Contain(int v) => v >= Start && v <= End;
+    public bool Contains(int v) => v >= Start && v <= End;
 
     public bool Contains(IRange r2) => r2.Start >= Start && r2.End <= End;
 
     public bool Cross(IRange r2) => !(r2.End < Start || r2.Start > End);
 }
 
-public class LRange
+public class LRange(long start, long end)
 {
-    public LRange(long start, long end)
-    {
-        Start = start;
-        End = end;
-    }
+    public long End = end;
+    public long Start = start;
 
-    public long End;
-    public long Start;
-
-    public bool Contain(long v) => v >= Start && v <= End;
+    public bool Contains(long v) => v >= Start && v <= End;
 
     public bool Contains(LRange r2) => r2.Start >= Start && r2.End <= End;
 
@@ -41,7 +29,7 @@ public class LRange
 
 public class IMultiRange
 {
-    public List<IRange> Ranges = new();
+    public List<IRange> Ranges = [];
 
     public void Add(int start, int end)
     {
@@ -69,7 +57,7 @@ public class IMultiRange
 
 public class LMultiRange
 {
-    public List<LRange> Ranges = new();
+    public List<LRange> Ranges = [];
 
     public void Add(long start, long end)
     {
@@ -102,7 +90,6 @@ public class LMultiRange
         return null;
     }
 
-
     public long CountOut(long min = 0, long max = long.MaxValue)
     {
         long result = 0;
@@ -117,6 +104,9 @@ public class LMultiRange
 
         return result;
     }
+
+    public bool Contains(long value)
+        => Ranges.Any(r => r.Contains(value));
 
     public override string ToString() => string.Join(" ", Ranges);
 }
