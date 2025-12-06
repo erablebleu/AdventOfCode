@@ -2,7 +2,7 @@ This repository contains my solutions for [Advent of Code](https://adventofcode.
 
 Day statement/input are downloaded. Class is generated.
 
-[[2025]](https://adventofcode.com/2025)&emsp;10 :star:<br />
+[[2025]](https://adventofcode.com/2025)&emsp;12 :star:<br />
 [[2024]](https://adventofcode.com/2024)&emsp;00 :star:<br />
 [[2023]](https://adventofcode.com/2023)&emsp;08 :star:<br />
 [[2022]](https://adventofcode.com/2022)&emsp;50 :star:<br />
