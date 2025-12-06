@@ -1,57 +1,68 @@
 ﻿using AdventOfCode.Tools;
 
-namespace AdventOfCode.Tools
+namespace AdventOfCode.Tools;
+
+public static class IEnumerableExtension
 {
-    public static class IEnumerableExtension
+    public static IEnumerable<Tout> SelectConcecutives<Tin, Tout>(this IEnumerable<Tin> ls, Func<Tin, Tin, Tout> func)
     {
-        public static IEnumerable<Tout> SelectConcecutives<Tin, Tout>(this IEnumerable<Tin> ls, Func<Tin, Tin, Tout> func)
-        {
-            for (int i = 0; i < ls.Count() - 1; i++)
-                yield return func.Invoke(ls.ElementAt(i), ls.ElementAt(i + 1));
-            yield break;
-        }
-        public static long Product(this IEnumerable<int> ls)
-        {
-            long result = 1;
-            foreach (int i in ls)
-                result *= i;
-            return result;
-        }
-        public static T[,] To2DArray<T>(this IEnumerable<IEnumerable<T>> src)
-        {
-            T[][] data = src.Select(x => x.ToArray()).ToArray();
+        for (int i = 0; i < ls.Count() - 1; i++)
+            yield return func.Invoke(ls.ElementAt(i), ls.ElementAt(i + 1));
+        yield break;
+    }
 
-            var res = new T[data.Length, data.Max(x => x.Length)];
-            for (var i = 0; i < data.Length; ++i)
-                for (var j = 0; j < data[i].Length; ++j)
-                    res[i, j] = data[i][j];
+    public static long Product(this IEnumerable<int> ls)
+    {
+        long result = 1;
+        foreach (int i in ls)
+            result *= i;
+        return result;
+    }
 
-            return res;
-        }
-        public static T[,] Transpose<T>(this T[,] src)
+    public static long Product(this IEnumerable<long> ls)
+    {
+        long result = 1;
+        foreach (long i in ls)
+            result *= i;
+        return result;
+    }
+
+    public static T[,] To2DArray<T>(this IEnumerable<IEnumerable<T>> src)
+    {
+        T[][] data = src.Select(x => x.ToArray()).ToArray();
+
+        var res = new T[data.Length, data.Max(x => x.Length)];
+        for (var i = 0; i < data.Length; ++i)
+            for (var j = 0; j < data[i].Length; ++j)
+                res[i, j] = data[i][j];
+
+        return res;
+    }
+
+    public static T[,] Transpose<T>(this T[,] src)
+    {
+        T[,] result = new T[src.GetLength(1), src.GetLength(0)];
+        for (int x = 0; x < src.GetLength(0); x++)
+            for (int y = 0; y < src.GetLength(1); y++)
+                result[y, x] = src[x, y];
+        return result;
+    }
+
+    public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> src, T delimiter)
+    {
+        List<T> result = [];
+        foreach (T item in src)
         {
-            T[,] result = new T[src.GetLength(1), src.GetLength(0)];
-            for(int x = 0; x < src.GetLength(0); x++)
-                for (int y = 0; y < src.GetLength(1); y++)
-                    result[y, x] = src[x, y];
-            return result;
-        }
-        public static IEnumerable<IEnumerable<T>> Batch<T>(this IEnumerable<T> src, T delimiter)
-        {
-            List<T> result = [];
-            foreach(T item in src)
+            if (item.Equals(delimiter))
             {
-                if(item.Equals(delimiter))
-                {
-                    yield return result;
-                    result = [];
-                }
-                else
-                    result.Add(item);
-            }
-
-            if(result.Count != 0)
                 yield return result;
+                result = [];
+            }
+            else
+                result.Add(item);
         }
+
+        if (result.Count != 0)
+            yield return result;
     }
 }
